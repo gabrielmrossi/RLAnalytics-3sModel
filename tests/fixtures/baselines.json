@@ -1,0 +1,2911 @@
+{
+  "dataset": {
+    "shape": [
+      210,
+      14
+    ],
+    "label_counts": {
+      "higher": 106,
+      "lower": 104
+    },
+    "columns": [
+      "label",
+      "replay_name",
+      "team",
+      "team_label",
+      "avg_boost_pct",
+      "avg_dist_to_ball",
+      "avg_speed",
+      "ball_chase_ratio",
+      "defensive_coverage_pct",
+      "min_player_dist_to_ball",
+      "team_spread_mean",
+      "team_spread_std",
+      "triangle_area_mean",
+      "triangle_area_std"
+    ],
+    "feature_names": [
+      "avg_boost_pct",
+      "avg_dist_to_ball",
+      "avg_speed",
+      "ball_chase_ratio",
+      "defensive_coverage_pct",
+      "min_player_dist_to_ball",
+      "team_spread_mean",
+      "team_spread_std",
+      "triangle_area_mean",
+      "triangle_area_std"
+    ],
+    "feature_means": {
+      "avg_boost_pct": 48.247143,
+      "avg_dist_to_ball": 2913.44381,
+      "avg_speed": 1309.319048,
+      "ball_chase_ratio": 22.041905,
+      "defensive_coverage_pct": 85.002857,
+      "min_player_dist_to_ball": 1399.082381,
+      "team_spread_mean": 3479.458095,
+      "team_spread_std": 1514.312381,
+      "triangle_area_mean": 3256970.687619,
+      "triangle_area_std": 3557617.280476
+    },
+    "feature_stds": {
+      "avg_boost_pct": 5.250966,
+      "avg_dist_to_ball": 267.00927,
+      "avg_speed": 174.274162,
+      "ball_chase_ratio": 6.882698,
+      "defensive_coverage_pct": 5.902606,
+      "min_player_dist_to_ball": 186.916778,
+      "team_spread_mean": 380.383442,
+      "team_spread_std": 179.683248,
+      "triangle_area_mean": 820454.593008,
+      "triangle_area_std": 740238.687319
+    },
+    "df_hash": "80444ab731db96dac278408a7b582919550af2482ed0195816be2a7dbb7099fc"
+  },
+  "knn": {
+    "accuracy": 0.861905,
+    "confusion_matrix": [
+      [
+        93,
+        13
+      ],
+      [
+        16,
+        88
+      ]
+    ],
+    "predictions": [
+      {
+        "index": 0,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 1,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 2,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 3,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 4,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 5,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 6,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 7,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 8,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 9,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 10,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 11,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 12,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 13,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 14,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 15,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 16,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 17,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 18,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 19,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 20,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 21,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 22,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 23,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 24,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 25,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 26,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 27,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 28,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 29,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 30,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 31,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 32,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 33,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 34,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 35,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 36,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 37,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 38,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 39,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 40,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 41,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 42,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 43,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 44,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 45,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 46,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 47,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 48,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 49,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 50,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 51,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 52,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 53,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 54,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 55,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 56,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 57,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 58,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 59,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 60,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 61,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 62,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 63,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 64,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 65,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 66,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 67,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 68,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 69,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 70,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 71,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 72,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 73,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 74,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 75,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 76,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 77,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 78,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 79,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 80,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 81,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 82,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 83,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 84,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 85,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 86,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 87,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 88,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 89,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 90,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 91,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 92,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 93,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 94,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 95,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 96,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 97,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 98,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 99,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 100,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 101,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 102,
+        "actual": "higher",
+        "predicted": "lower",
+        "correct": 0
+      },
+      {
+        "index": 103,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 104,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 105,
+        "actual": "higher",
+        "predicted": "higher",
+        "correct": 1
+      },
+      {
+        "index": 106,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 107,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 108,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 109,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 110,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 111,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 112,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 113,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 114,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 115,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 116,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 117,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 118,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 119,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 120,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 121,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 122,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 123,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 124,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 125,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 126,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 127,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 128,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 129,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 130,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 131,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 132,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 133,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 134,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 135,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 136,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 137,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 138,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 139,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 140,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 141,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 142,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 143,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 144,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 145,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 146,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 147,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 148,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 149,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 150,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 151,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 152,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 153,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 154,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 155,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 156,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 157,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 158,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 159,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 160,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 161,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 162,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 163,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 164,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 165,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 166,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 167,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 168,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 169,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 170,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 171,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 172,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 173,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 174,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 175,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 176,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 177,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 178,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 179,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 180,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 181,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 182,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 183,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 184,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 185,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 186,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 187,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 188,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 189,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 190,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 191,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 192,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 193,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 194,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 195,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 196,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 197,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 198,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 199,
+        "actual": "lower",
+        "predicted": "higher",
+        "correct": 0
+      },
+      {
+        "index": 200,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 201,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 202,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 203,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 204,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 205,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 206,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 207,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 208,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      },
+      {
+        "index": 209,
+        "actual": "lower",
+        "predicted": "lower",
+        "correct": 1
+      }
+    ],
+    "feature_importance_ablation": {
+      "avg_speed": 0.0667,
+      "team_spread_std": 0.019,
+      "avg_dist_to_ball": 0.0,
+      "triangle_area_mean": 0.0,
+      "triangle_area_std": 0.0,
+      "min_player_dist_to_ball": -0.0143,
+      "team_spread_mean": -0.0143,
+      "ball_chase_ratio": -0.019,
+      "defensive_coverage_pct": -0.0286,
+      "avg_boost_pct": -0.0333
+    }
+  },
+  "decision_tree": {
+    "accuracy": 0.880952,
+    "confusion_matrix": [
+      [
+        94,
+        12
+      ],
+      [
+        13,
+        91
+      ]
+    ],
+    "feature_importances": {
+      "avg_speed": 0.8917,
+      "ball_chase_ratio": 0.0569,
+      "min_player_dist_to_ball": 0.0253,
+      "triangle_area_std": 0.0162,
+      "team_spread_std": 0.0098,
+      "avg_boost_pct": 0.0,
+      "avg_dist_to_ball": 0.0,
+      "defensive_coverage_pct": 0.0,
+      "team_spread_mean": 0.0,
+      "triangle_area_mean": 0.0
+    },
+    "rules": "|--- avg_speed <= 0.17\n|   |--- ball_chase_ratio <= -0.46\n|   |   |--- triangle_area_std <= -0.14\n|   |   |   |--- class: lower\n|   |   |--- triangle_area_std >  -0.14\n|   |   |   |--- class: lower\n|   |--- ball_chase_ratio >  -0.46\n|   |   |--- team_spread_std <= -1.53\n|   |   |   |--- class: higher\n|   |   |--- team_spread_std >  -1.53\n|   |   |   |--- class: lower\n|--- avg_speed >  0.17\n|   |--- min_player_dist_to_ball <= 0.70\n|   |   |--- class: higher\n|   |--- min_player_dist_to_ball >  0.70\n|   |   |--- ball_chase_ratio <= -0.65\n|   |   |   |--- class: higher\n|   |   |--- ball_chase_ratio >  -0.65\n|   |   |   |--- class: lower\n"
+  },
+  "random_forest": {
+    "accuracy": 0.909524,
+    "confusion_matrix": [
+      [
+        97,
+        9
+      ],
+      [
+        10,
+        94
+      ]
+    ],
+    "feature_importances": {
+      "avg_speed": 0.4308,
+      "triangle_area_mean": 0.1433,
+      "team_spread_mean": 0.1125,
+      "team_spread_std": 0.079,
+      "triangle_area_std": 0.0492,
+      "avg_dist_to_ball": 0.0466,
+      "min_player_dist_to_ball": 0.0447,
+      "ball_chase_ratio": 0.0412,
+      "defensive_coverage_pct": 0.03,
+      "avg_boost_pct": 0.0228
+    }
+  },
+  "benchmarking": {
+    "summary_table": [
+      {
+        "Modelo": "Random Forest",
+        "Acuracia": "90.5% ± 4.8%",
+        "F1-Score": "90.4% ± 4.8%",
+        "Precisao": "91.0% ± 4.9%",
+        "Recall": "90.5% ± 4.8%"
+      },
+      {
+        "Modelo": "Decision Tree",
+        "Acuracia": "89.0% ± 4.4%",
+        "F1-Score": "88.9% ± 4.6%",
+        "Precisao": "90.4% ± 3.6%",
+        "Recall": "89.0% ± 4.4%"
+      },
+      {
+        "Modelo": "KNN",
+        "Acuracia": "87.6% ± 2.3%",
+        "F1-Score": "87.6% ± 2.3%",
+        "Precisao": "88.4% ± 2.6%",
+        "Recall": "87.6% ± 2.3%"
+      }
+    ],
+    "confusion_matrices": {
+      "KNN": [
+        [
+          0.877358,
+          0.122642
+        ],
+        [
+          0.125,
+          0.875
+        ]
+      ],
+      "Decision Tree": [
+        [
+          0.886792,
+          0.113208
+        ],
+        [
+          0.105769,
+          0.894231
+        ]
+      ],
+      "Random Forest": [
+        [
+          0.915094,
+          0.084906
+        ],
+        [
+          0.105769,
+          0.894231
+        ]
+      ]
+    }
+  },
+  "kmeans": {
+    "elbow_inertias_k2_to_k8": [
+      1575.179255,
+      1367.491048,
+      1195.148599,
+      1112.517009,
+      1044.965641,
+      983.668519,
+      935.362212
+    ],
+    "labels": [
+      2,
+      2,
+      2,
+      0,
+      2,
+      2,
+      2,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      2,
+      0,
+      0,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      0,
+      2,
+      2,
+      0,
+      0,
+      2,
+      0,
+      2,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      0,
+      0,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      0,
+      2,
+      2,
+      0,
+      2,
+      2,
+      0,
+      2,
+      2,
+      2,
+      0,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      0,
+      2,
+      2,
+      0,
+      2,
+      0,
+      2,
+      2,
+      0,
+      2,
+      2,
+      2,
+      0,
+      0,
+      0,
+      2,
+      2,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      2,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      2,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      2,
+      0,
+      0,
+      0,
+      2,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0,
+      2,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    "silhouette": 0.173138,
+    "cluster_summary": {
+      "Cluster 0": {
+        "avg_boost_pct": 48.59,
+        "avg_dist_to_ball": 3196.85,
+        "avg_speed": 1253.77,
+        "ball_chase_ratio": 17.13,
+        "defensive_coverage_pct": 87.58,
+        "min_player_dist_to_ball": 1569.76,
+        "team_spread_mean": 3785.2,
+        "team_spread_std": 1645.12,
+        "triangle_area_mean": 3834834.59,
+        "triangle_area_std": 4084834.08
+      },
+      "Cluster 1": {
+        "avg_boost_pct": 48.07,
+        "avg_dist_to_ball": 2743.59,
+        "avg_speed": 1193.69,
+        "ball_chase_ratio": 28.17,
+        "defensive_coverage_pct": 83.31,
+        "min_player_dist_to_ball": 1368.04,
+        "team_spread_mean": 3087.36,
+        "team_spread_std": 1504.33,
+        "triangle_area_mean": 2404340.73,
+        "triangle_area_std": 2945750.62
+      },
+      "Cluster 2": {
+        "avg_boost_pct": 48.15,
+        "avg_dist_to_ball": 2852.46,
+        "avg_speed": 1446.59,
+        "ball_chase_ratio": 20.42,
+        "defensive_coverage_pct": 84.58,
+        "min_player_dist_to_ball": 1302.39,
+        "team_spread_mean": 3589.41,
+        "team_spread_std": 1428.6,
+        "triangle_area_mean": 3558647.48,
+        "triangle_area_std": 3693141.78
+      }
+    }
+  },
+  "positioning_detector": {
+    "reference_mean": {
+      "avg_boost_pct": 48.181132,
+      "avg_dist_to_ball": 2915.477358,
+      "avg_speed": 1438.177358,
+      "ball_chase_ratio": 19.496226,
+      "defensive_coverage_pct": 85.00283,
+      "min_player_dist_to_ball": 1356.113208,
+      "team_spread_mean": 3637.281132,
+      "team_spread_std": 1454.956604,
+      "triangle_area_mean": 3669504.809434,
+      "triangle_area_std": 3791118.072642
+    },
+    "reference_std": {
+      "avg_boost_pct": 4.3477,
+      "avg_dist_to_ball": 209.365755,
+      "avg_speed": 98.178209,
+      "ball_chase_ratio": 5.425775,
+      "defensive_coverage_pct": 4.673644,
+      "min_player_dist_to_ball": 168.721725,
+      "team_spread_mean": 240.667441,
+      "team_spread_std": 138.053667,
+      "triangle_area_mean": 600126.143621,
+      "triangle_area_std": 560366.483252
+    },
+    "errors_count": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      1,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      1,
+      3,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      4,
+      2,
+      2,
+      1,
+      0,
+      1,
+      3,
+      3,
+      0,
+      1,
+      0,
+      0,
+      2,
+      2,
+      3,
+      4,
+      2,
+      1,
+      2,
+      1,
+      0,
+      0,
+      3,
+      1,
+      1,
+      2,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      0,
+      1,
+      3,
+      2,
+      2,
+      0,
+      1,
+      1,
+      2,
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      0,
+      2,
+      5,
+      4,
+      4,
+      1,
+      2,
+      2,
+      0,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      4,
+      1,
+      0,
+      1,
+      1,
+      1,
+      3,
+      3,
+      2,
+      1,
+      2,
+      1,
+      2,
+      0,
+      0,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      2,
+      2,
+      3
+    ],
+    "sample_errors": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [
+        {
+          "type": "INCONSISTENT_ROTATION",
+          "severity": "media",
+          "value": 1698.3,
+          "reference": 1455.0,
+          "description": "Variacao da dispersao (1698) esta 1.8 desvios acima da referencia (1455). Rotacao inconsistente: hora agrupados, hora dispersos."
+        }
+      ],
+      []
+    ]
+  },
+  "model_driven_detector": {
+    "predictions": [
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "lower",
+      "lower",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "higher",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower",
+      "lower"
+    ],
+    "reference_mean": {
+      "avg_boost_pct": 48.181132,
+      "avg_dist_to_ball": 2915.477358,
+      "avg_speed": 1438.177358,
+      "ball_chase_ratio": 19.496226,
+      "defensive_coverage_pct": 85.00283,
+      "min_player_dist_to_ball": 1356.113208,
+      "team_spread_mean": 3637.281132,
+      "team_spread_std": 1454.956604,
+      "triangle_area_mean": 3669504.809434,
+      "triangle_area_std": 3791118.072642
+    },
+    "reference_std": {
+      "avg_boost_pct": 4.3477,
+      "avg_dist_to_ball": 209.365755,
+      "avg_speed": 98.178209,
+      "ball_chase_ratio": 5.425775,
+      "defensive_coverage_pct": 4.673644,
+      "min_player_dist_to_ball": 168.721725,
+      "team_spread_mean": 240.667441,
+      "team_spread_std": 138.053667,
+      "triangle_area_mean": 600126.143621,
+      "triangle_area_std": 560366.483252
+    },
+    "feature_importances": {
+      "avg_speed": 0.4308,
+      "triangle_area_mean": 0.1433,
+      "team_spread_mean": 0.1125,
+      "team_spread_std": 0.079,
+      "triangle_area_std": 0.0492,
+      "avg_dist_to_ball": 0.0466,
+      "min_player_dist_to_ball": 0.0447,
+      "ball_chase_ratio": 0.0412,
+      "defensive_coverage_pct": 0.03,
+      "avg_boost_pct": 0.0228
+    },
+    "errors_count": [
+      0,
+      0,
+      0,
+      3,
+      1,
+      0,
+      0,
+      1,
+      2,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      3,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      1,
+      0,
+      2,
+      0,
+      2,
+      3,
+      0,
+      0,
+      2,
+      1,
+      1,
+      3,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      3,
+      2,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      5,
+      0,
+      0,
+      0,
+      0,
+      1,
+      4,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      3,
+      5,
+      0,
+      0,
+      0,
+      1,
+      3,
+      7,
+      3,
+      5,
+      3,
+      2,
+      2,
+      5,
+      5,
+      2,
+      3,
+      1,
+      0,
+      3,
+      5,
+      5,
+      6,
+      4,
+      3,
+      3,
+      2,
+      0,
+      1,
+      6,
+      3,
+      1,
+      6,
+      3,
+      2,
+      2,
+      3,
+      2,
+      4,
+      4,
+      2,
+      2,
+      3,
+      6,
+      6,
+      4,
+      1,
+      4,
+      1,
+      3,
+      3,
+      0,
+      2,
+      2,
+      3,
+      4,
+      6,
+      5,
+      3,
+      3,
+      2,
+      3,
+      4,
+      8,
+      5,
+      8,
+      3,
+      4,
+      4,
+      3,
+      3,
+      2,
+      3,
+      2,
+      1,
+      4,
+      7,
+      2,
+      0,
+      2,
+      2,
+      2,
+      4,
+      4,
+      5,
+      2,
+      4,
+      2,
+      5,
+      3,
+      1,
+      4,
+      2,
+      4,
+      4,
+      3,
+      3,
+      6,
+      4,
+      2,
+      2,
+      3,
+      3,
+      1,
+      2,
+      4,
+      4,
+      4,
+      6
+    ],
+    "sample_errors": [
+      [],
+      [],
+      [],
+      [
+        {
+          "type": "Distancia Media da Bola",
+          "severity": "media",
+          "value": 3424.6,
+          "reference": 2915.5,
+          "z_score": 2.43,
+          "importance": 0.0466,
+          "impact": 0.1133,
+          "description": "3424.6 esta 2.4σ acima da ref. (2915.5). Distancia media a bola fora do padrao de rank alto. [Peso RF: 4.7%]"
+        },
+        {
+          "type": "Proximidade Minima da Bola",
+          "severity": "media",
+          "value": 1666.3,
+          "reference": 1356.1,
+          "z_score": 1.84,
+          "importance": 0.0447,
+          "impact": 0.0822,
+          "description": "1666.3 esta 1.8σ acima da ref. (1356.1). Distancia minima a bola fora do padrao de rank alto. [Peso RF: 4.5%]"
+        },
+        {
+          "type": "Variacao do Triangulo",
+          "severity": "media",
+          "value": 4719802.2,
+          "reference": 3791118.1,
+          "z_score": 1.66,
+          "importance": 0.0492,
+          "impact": 0.0815,
+          "description": "4719802.2 esta 1.7σ acima da ref. (3791118.1). Formacao do time varia demais entre frames. [Peso RF: 4.9%]"
+        }
+      ],
+      [
+        {
+          "type": "Variacao do Triangulo",
+          "severity": "media",
+          "value": 4828108.1,
+          "reference": 3791118.1,
+          "z_score": 1.85,
+          "importance": 0.0492,
+          "impact": 0.091,
+          "description": "4828108.1 esta 1.9σ acima da ref. (3791118.1). Formacao do time varia demais entre frames. [Peso RF: 4.9%]"
+        }
+      ],
+      [],
+      [],
+      [
+        {
+          "type": "Velocidade Media",
+          "severity": "alta",
+          "value": 1194.5,
+          "reference": 1438.2,
+          "z_score": -2.48,
+          "importance": 0.4308,
+          "impact": 1.0692,
+          "description": "1194.5 esta 2.5σ abaixo da ref. (1438.2). Velocidade media dos jogadores abaixo do padrao. [Peso RF: 43.1%]"
+        }
+      ],
+      [
+        {
+          "type": "Rotacao Inconsistente",
+          "severity": "media",
+          "value": 1698.3,
+          "reference": 1455.0,
+          "z_score": 1.76,
+          "importance": 0.079,
+          "impact": 0.1393,
+          "description": "1698.3 esta 1.8σ acima da ref. (1455.0). Rotacao inconsistente: hora agrupados, hora dispersos. [Peso RF: 7.9%]"
+        },
+        {
+          "type": "Variacao do Triangulo",
+          "severity": "media",
+          "value": 5093206.8,
+          "reference": 3791118.1,
+          "z_score": 2.32,
+          "importance": 0.0492,
+          "impact": 0.1143,
+          "description": "5093206.8 esta 2.3σ acima da ref. (3791118.1). Formacao do time varia demais entre frames. [Peso RF: 4.9%]"
+        }
+      ],
+      []
+    ]
+  },
+  "tactical_narratives": {
+    "scores": [
+      81.0,
+      81.0,
+      70.0,
+      76.0,
+      76.0,
+      73.0,
+      71.0,
+      64.0,
+      80.0,
+      79.0,
+      77.0,
+      81.0,
+      74.0,
+      70.0,
+      73.0,
+      69.0,
+      72.0,
+      80.0,
+      59.0,
+      57.0,
+      75.0,
+      85.0,
+      74.0,
+      81.0,
+      75.0,
+      63.0,
+      75.0,
+      71.0,
+      74.0,
+      68.0,
+      72.0,
+      71.0,
+      73.0,
+      77.0,
+      74.0,
+      82.0,
+      69.0,
+      78.0,
+      78.0,
+      71.0,
+      74.0,
+      75.0,
+      71.0,
+      78.0,
+      82.0,
+      75.0,
+      71.0,
+      60.0,
+      78.0,
+      79.0,
+      79.0,
+      78.0,
+      76.0,
+      70.0,
+      77.0,
+      86.0,
+      74.0,
+      81.0,
+      76.0,
+      76.0,
+      80.0,
+      77.0,
+      79.0,
+      78.0,
+      77.0,
+      78.0,
+      77.0,
+      73.0,
+      78.0,
+      71.0,
+      75.0,
+      74.0,
+      78.0,
+      79.0,
+      74.0,
+      80.0,
+      70.0,
+      72.0,
+      77.0,
+      69.0,
+      74.0,
+      81.0,
+      76.0,
+      74.0,
+      74.0,
+      83.0,
+      71.0,
+      76.0,
+      76.0,
+      79.0,
+      74.0,
+      81.0,
+      72.0,
+      70.0,
+      75.0,
+      72.0,
+      81.0,
+      78.0,
+      75.0,
+      77.0,
+      80.0,
+      88.0,
+      60.0,
+      72.0,
+      74.0,
+      84.0,
+      61.0,
+      58.0,
+      52.0,
+      48.0,
+      60.0,
+      59.0,
+      68.0,
+      52.0,
+      54.0,
+      60.0,
+      68.0,
+      65.0,
+      72.0,
+      82.0,
+      62.0,
+      53.0,
+      53.0,
+      56.0,
+      62.0,
+      57.0,
+      59.0,
+      57.0,
+      71.0,
+      65.0,
+      58.0,
+      57.0,
+      67.0,
+      51.0,
+      42.0,
+      58.0,
+      63.0,
+      63.0,
+      59.0,
+      48.0,
+      58.0,
+      57.0,
+      59.0,
+      59.0,
+      56.0,
+      52.0,
+      60.0,
+      64.0,
+      63.0,
+      70.0,
+      61.0,
+      61.0,
+      74.0,
+      65.0,
+      60.0,
+      59.0,
+      63.0,
+      56.0,
+      52.0,
+      55.0,
+      55.0,
+      56.0,
+      59.0,
+      60.0,
+      53.0,
+      46.0,
+      56.0,
+      59.0,
+      57.0,
+      53.0,
+      65.0,
+      59.0,
+      61.0,
+      60.0,
+      66.0,
+      67.0,
+      48.0,
+      46.0,
+      66.0,
+      70.0,
+      55.0,
+      57.0,
+      50.0,
+      63.0,
+      62.0,
+      52.0,
+      57.0,
+      54.0,
+      57.0,
+      63.0,
+      56.0,
+      56.0,
+      61.0,
+      53.0,
+      55.0,
+      67.0,
+      64.0,
+      62.0,
+      59.0,
+      66.0,
+      60.0,
+      64.0,
+      59.0,
+      62.0,
+      61.0,
+      62.0,
+      50.0,
+      58.0,
+      55.0,
+      52.0
+    ],
+    "sample_narratives": [
+      {
+        "narrative": "O time demonstra um <strong>jogo sólido</strong>, com fundamentos alinhados ao padrão de jogadores experientes. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. No geral, o desempenho tático está dentro do esperado para o nível competitivo.",
+        "score": 81.0
+      },
+      {
+        "narrative": "O time demonstra um <strong>jogo sólido</strong>, com fundamentos alinhados ao padrão de jogadores experientes. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. No geral, o desempenho tático está dentro do esperado para o nível competitivo.",
+        "score": 81.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. A rotação é <strong>consistente</strong>, com os jogadores mantendo uma distribuição regular ao longo da partida. A formação é <strong>estável</strong> ao longo da partida, indicando rotações bem coordenadas. No entanto, os jogadores ficam <strong>muito próximos entre si</strong>, limitando as opções de passe e cobertura.",
+        "score": 70.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. Por outro lado, a formação do time é <strong>instável</strong>: ora muito agrupados, ora muito espalhados, sem um padrão claro de rotação. O time tende a ficar <strong>longe demais da bola</strong>, perdendo oportunidades de pressão. O jogador mais próximo fica <strong>distante demais da bola</strong>, demorando a chegar nas disputas.",
+        "score": 76.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. Por outro lado, a formação do time é <strong>instável</strong>: ora muito agrupados, ora muito espalhados, sem um padrão claro de rotação.",
+        "score": 76.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. A rotação é <strong>consistente</strong>, com os jogadores mantendo uma distribuição regular ao longo da partida. Como ponto de melhoria, o time sofre com <strong>ball chasing</strong>: com frequência, dois ou mais jogadores disputam a bola juntos, deixando o campo desprotegido. O time opera com <strong>boost baixo</strong> na maior parte do tempo, limitando a capacidade de reagir rapidamente.",
+        "score": 73.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. A distância entre os jogadores é <strong>bem distribuída</strong>, facilitando passes e coberturas. No geral, o desempenho tático está dentro do esperado para o nível competitivo.",
+        "score": 71.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. A rotação é <strong>consistente</strong>, com os jogadores mantendo uma distribuição regular ao longo da partida. A formação é <strong>estável</strong> ao longo da partida, indicando rotações bem coordenadas. Por outro lado, o ritmo de jogo está <strong>abaixo do esperado</strong>, com movimentação lenta que dificulta a pressão no adversário. O time opera com <strong>boost baixo</strong> na maior parte do tempo, limitando a capacidade de reagir rapidamente.",
+        "score": 64.0
+      },
+      {
+        "narrative": "O time demonstra um <strong>jogo sólido</strong>, com fundamentos alinhados ao padrão de jogadores experientes. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. Por outro lado, a rotação é <strong>irregular</strong> — há momentos de boa distribuição intercalados com agrupamentos desnecessários. A formação do time é <strong>instável</strong>: ora muito agrupados, ora muito espalhados, sem um padrão claro de rotação. O time tende a ficar <strong>longe demais da bola</strong>, perdendo oportunidades de pressão.",
+        "score": 80.0
+      },
+      {
+        "narrative": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível. O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo. O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo. No geral, o desempenho tático está dentro do esperado para o nível competitivo.",
+        "score": 79.0
+      }
+    ]
+  },
+  "analyzer_snapshots": {
+    "03515d59-b3fb-4c81-a9bd-6e3621928694": {
+      "metadata": {
+        "map_name": "street_p",
+        "team_size": 3,
+        "team_0_score": 3,
+        "team_1_score": 1,
+        "num_frames": 10088,
+        "total_seconds": 300.88483,
+        "date": "2026-04-28 16-11-09",
+        "replay_name": "2026-04-28.16.11 SyKhO Ranked Standard Win",
+        "player_stats": [
+          {
+            "name": "KP123789",
+            "team": 0,
+            "score": 472,
+            "goals": 1,
+            "assists": 0,
+            "saves": 3,
+            "shots": 3
+          },
+          {
+            "name": "SyKhOツ",
+            "team": 0,
+            "score": 250,
+            "goals": 0,
+            "assists": 2,
+            "saves": 0,
+            "shots": 2
+          },
+          {
+            "name": "HLF_MARCOS",
+            "team": 1,
+            "score": 192,
+            "goals": 0,
+            "assists": 1,
+            "saves": 0,
+            "shots": 2
+          },
+          {
+            "name": "HLF_HENRIK",
+            "team": 1,
+            "score": 162,
+            "goals": 0,
+            "assists": 0,
+            "saves": 1,
+            "shots": 2
+          },
+          {
+            "name": "Fraim",
+            "team": 0,
+            "score": 650,
+            "goals": 2,
+            "assists": 0,
+            "saves": 5,
+            "shots": 4
+          },
+          {
+            "name": "que pasa loko",
+            "team": 1,
+            "score": 577,
+            "goals": 1,
+            "assists": 0,
+            "saves": 4,
+            "shots": 6
+          }
+        ]
+      },
+      "player_names": [
+        "Fraim",
+        "KP123789",
+        "SyKhOツ",
+        "HLF_HENRIK",
+        "HLF_MARCOS",
+        "que pasa loko"
+      ],
+      "positions_shape": [
+        2344,
+        10
+      ],
+      "positions_hash": "98831b35e759ca83a2ef88386fd889f3cf36b7765c1db1a80ccc91fd3a043602",
+      "boost_shape": [
+        2007,
+        5
+      ],
+      "boost_hash": "d728b37c835fef336914e00bcecb7a5e2c399a255b1e505497418994def4e209",
+      "goals_count": 4,
+      "demolitions_count": 8,
+      "stagnation_alerts_team0": [],
+      "stagnation_alerts_team1": []
+    },
+    "040a5cfa-c8c9-4d93-8f10-15dd7a290f8e": {
+      "metadata": {
+        "map_name": "FF_Dusk_P",
+        "team_size": 3,
+        "team_0_score": 4,
+        "team_1_score": 5,
+        "num_frames": 11582,
+        "total_seconds": 0.0,
+        "date": "2026-04-12 23-54-44",
+        "replay_name": "2026-04-12.23.54 hulksmash43210 Ranked Standard Loss",
+        "player_stats": []
+      },
+      "player_names": [
+        "Glizzy-gobble237",
+        "Traven451",
+        "hulksmash43210",
+        "Iamfat458153",
+        "Jakeyboi4401",
+        "chiefster"
+      ],
+      "positions_shape": [
+        2689,
+        10
+      ],
+      "positions_hash": "78b0fc8c05d6ec89ca4523d639b719ecc6e381bb14c82f091ee691f2826f6a47",
+      "boost_shape": [
+        2293,
+        5
+      ],
+      "boost_hash": "72a190952db788d301f43dc75bb806c0137f0eda47671d76d988da812a8a85d4",
+      "goals_count": 9,
+      "demolitions_count": 10,
+      "stagnation_alerts_team0": [],
+      "stagnation_alerts_team1": []
+    }
+  }
+}
