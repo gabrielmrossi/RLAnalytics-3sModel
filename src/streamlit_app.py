@@ -97,113 +97,29 @@ st.markdown("""
 
 
 # ──────────────────────────────────────────────
-#  Constantes
-# ──────────────────────────────────────────────
+from config import (
+    BALL_COLOR,
+    DARK_BG,
+    FIELD_HALF_LENGTH,
+    FIELD_HALF_WIDTH,
+    META_COLS,
+    TEAM_COLORS,
+    TEAM_FILL_COLORS,
+    TEAM_NAMES,
+)
+from feature_catalog import (
+    FEATURE_LABELS,
+    NARRATIVE_TEMPLATES,
+    classify_tier,
+    compute_z_score,
+    get_feature_label,
+)
 
-FIELD_HALF_LENGTH = 5120
-FIELD_HALF_WIDTH = 4096
-
-TEAM_COLORS = {0: "#3498db", 1: "#e67e22"}
-TEAM_FILL_COLORS = {0: "rgba(52, 152, 219, 0.15)", 1: "rgba(230, 126, 34, 0.15)"}
-TEAM_NAMES = {0: "Azul", 1: "Laranja"}
-BALL_COLOR = "#ffffff"
-
-_DARK_BG = "#0e1117"
-_META_COLS = {"label", "replay_name", "team", "team_label"}
-
-# ──────────────────────────────────────────────
-#  Dicionario de Traducao de Features
-# ──────────────────────────────────────────────
-
-# Mapeia nomes tecnicos internos -> portugues claro para exibicao.
-# NUNCA altere as chaves; elas devem coincidir com os nomes reais das colunas.
-FEATURE_LABELS: dict[str, str] = {
-    "avg_speed":                "Velocidade Média",
-    "triangle_area_mean":       "Área Média do Triângulo",
-    "team_spread_mean":         "Dispersão Média da Equipe",
-    "triangle_area_std":        "Variação da Área do Triângulo",
-    "team_spread_std":          "Variação da Dispersão",
-    "avg_dist_to_ball":         "Dist. Média até a Bola",
-    "min_player_dist_to_ball":  "Dist. Mínima à Bola",
-    "ball_chase_ratio":         "Taxa de Ball Chasing",
-    "defensive_coverage_pct":   "Cobertura Defensiva (%)",
-    "avg_boost_pct":            "Média de Boost (%)",
-}
-
-
-def _translate(name: str) -> str:
-    """Retorna o label PT-BR de uma feature, ou o proprio nome se nao mapeado."""
-    return FEATURE_LABELS.get(name, name)
-
-
-# ──────────────────────────────────────────────
-#  Motor de Narrativa Tática
-# ──────────────────────────────────────────────
-
-_NARRATIVE_TEMPLATES: dict[str, dict] = {
-    "ball_chase_ratio": {
-        "direction": "above",
-        "good": "A disciplina de rotação é boa — os jogadores evitam disputar a bola ao mesmo tempo.",
-        "neutral": "A rotação é aceitável, mas há momentos em que mais de um jogador vai na bola ao mesmo tempo.",
-        "bad": "O time sofre com <strong>ball chasing</strong>: com frequência, dois ou mais jogadores disputam a bola juntos, deixando o campo desprotegido.",
-    },
-    "defensive_coverage_pct": {
-        "direction": "below",
-        "good": "A cobertura defensiva é sólida, com pelo menos um jogador protegendo a retaguarda na maior parte do jogo.",
-        "neutral": "A defesa está presente na maioria das jogadas, mas há janelas de vulnerabilidade onde o gol fica exposto.",
-        "bad": "O time deixa o gol <strong>desprotegido com frequência</strong>, faltando um jogador recuado para cobrir contra-ataques.",
-    },
-    "triangle_area_mean": {
-        "direction": "below",
-        "good": "O espaçamento entre os jogadores é <strong>amplo e eficiente</strong>, cobrindo bastante área do campo.",
-        "neutral": "A cobertura de campo está na média, sem se destacar positiva ou negativamente.",
-        "bad": "O time fica <strong>muito agrupado</strong>, cobrindo pouca área do campo e facilitando jogadas adversárias.",
-    },
-    "triangle_area_std": {
-        "direction": "above",
-        "good": "A formação é <strong>estável</strong> ao longo da partida, indicando rotações bem coordenadas.",
-        "neutral": "A formação oscila moderadamente ao longo do jogo, o que é aceitável.",
-        "bad": "A formação do time é <strong>instável</strong>: ora muito agrupados, ora muito espalhados, sem um padrão claro de rotação.",
-    },
-    "team_spread_mean": {
-        "direction": "below",
-        "good": "A distância entre os jogadores é <strong>bem distribuída</strong>, facilitando passes e coberturas.",
-        "neutral": "A distribuição dos jogadores pelo campo está dentro do esperado.",
-        "bad": "Os jogadores ficam <strong>muito próximos entre si</strong>, limitando as opções de passe e cobertura.",
-    },
-    "team_spread_std": {
-        "direction": "above",
-        "good": "A rotação é <strong>consistente</strong>, com os jogadores mantendo uma distribuição regular ao longo da partida.",
-        "neutral": "A consistência da rotação é razoável, com algumas variações.",
-        "bad": "A rotação é <strong>irregular</strong> — há momentos de boa distribuição intercalados com agrupamentos desnecessários.",
-    },
-    "avg_boost_pct": {
-        "direction": "below",
-        "good": "A gestão de boost é <strong>eficiente</strong>, com boas reservas mantidas ao longo da partida.",
-        "neutral": "O consumo de boost está dentro do normal, sem excessos nem escassez.",
-        "bad": "O time opera com <strong>boost baixo</strong> na maior parte do tempo, limitando a capacidade de reagir rapidamente.",
-    },
-    "avg_dist_to_ball": {
-        "direction": "any",
-        "good": "O posicionamento em relação à bola está <strong>equilibrado</strong>, sem ficar longe nem perto demais.",
-        "neutral": "A distância média até a bola está aceitável, mas pode ser otimizada.",
-        "bad_above": "O time tende a ficar <strong>longe demais da bola</strong>, perdendo oportunidades de pressão.",
-        "bad_below": "O time se posiciona <strong>muito próximo da bola</strong>, reforçando a falta de rotação para trás.",
-    },
-    "min_player_dist_to_ball": {
-        "direction": "any",
-        "good": "O jogador mais próximo da bola mantém uma <strong>distância saudável</strong>, com espaço para ler e reagir.",
-        "neutral": "A distância do jogador mais próximo à bola está dentro do padrão.",
-        "bad_above": "O jogador mais próximo fica <strong>distante demais da bola</strong>, demorando a chegar nas disputas.",
-        "bad_below": "O jogador mais próximo fica <strong>colado na bola</strong>, sem espaço de reação para mudanças de direção.",
-    },
-    "avg_speed": {
-        "direction": "below",
-        "good": "O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo.",
-        "neutral": "A velocidade de movimentação está na média.",
-        "bad": "O ritmo de jogo está <strong>abaixo do esperado</strong>, com movimentação lenta que dificulta a pressão no adversário.",
-    },
-}
+_DARK_BG = DARK_BG
+_META_COLS = META_COLS
+_translate = get_feature_label
+_NARRATIVE_TEMPLATES = NARRATIVE_TEMPLATES
+_classify_tier = classify_tier
 
 _SCORE_OVERVIEWS = {
     "excellent": "O time demonstra um <strong>jogo sólido</strong>, com fundamentos alinhados ao padrão de jogadores experientes.",
@@ -211,28 +127,6 @@ _SCORE_OVERVIEWS = {
     "average": "O time apresenta <strong>dificuldades em fundamentos importantes</strong> da rotação e posicionamento.",
     "poor": "O time tem <strong>problemas sérios de rotação</strong> que impedem a evolução no competitivo.",
 }
-
-
-def _classify_tier(z: float, direction: str) -> str:
-    """Classifica z-score em 'good', 'neutral', ou 'bad' baseado na direcao."""
-    if direction == "above":  # valor alto = ruim
-        if z > 1.2:
-            return "bad"
-        if z > 0.5:
-            return "neutral"
-        return "good"
-    elif direction == "below":  # valor baixo = ruim
-        if z < -1.2:
-            return "bad"
-        if z < -0.5:
-            return "neutral"
-        return "good"
-    else:  # "any" — qualquer desvio grande e ruim
-        if abs(z) > 1.2:
-            return "bad"
-        if abs(z) > 0.5:
-            return "neutral"
-        return "good"
 
 
 def _check_stagnation_anomaly(positions: pd.DataFrame, team_num: int) -> list[str]:
@@ -327,7 +221,7 @@ def _generate_tactical_narrative(
 
         ref_std = max(detector.reference_std.get(feat_name, 1.0), 0.01)
         importance = detector.feature_importances.get(feat_name, 0.0)
-        z = (val - ref_mean) / ref_std
+        z = compute_z_score(val, ref_mean, ref_std)
 
         tmpl = _NARRATIVE_TEMPLATES.get(feat_name)
         if not tmpl:

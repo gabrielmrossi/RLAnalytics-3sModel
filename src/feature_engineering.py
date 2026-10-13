@@ -15,14 +15,7 @@ import pandas as pd
 
 from analyzer import ReplayAnalyzer, compute_triangle_area, compute_distance
 from parser import discover_replays, PROCESSED_DIR
-
-
-# ──────────────────────────────────────────────
-#  Constantes de Telemetria
-# ──────────────────────────────────────────────
-
-# Threshold para "perto da bola" (ball-chasing)
-BALL_CHASE_DIST = 1500  # unreal units (~15m)
+from config import BALL_CHASE_DIST, META_COLS
 
 
 def _safe_std(arr: np.ndarray) -> float:
@@ -320,7 +313,7 @@ def build_dataset(
 
     # Reordenar colunas: metadata primeiro, features depois
     meta_cols = ["label", "replay_name", "team", "team_label"]
-    feature_cols = [c for c in df.columns if c not in meta_cols]
+    feature_cols = [c for c in df.columns if c not in META_COLS]
     df = df[meta_cols + sorted(feature_cols)]
 
     print(f"[features] Dataset: {len(df)} linhas, {len(feature_cols)} features.")

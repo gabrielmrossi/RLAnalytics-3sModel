@@ -11,10 +11,11 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from config import PROCESSED_DIR as _PROCESSED_DIR, RAW_DIR as _RAW_DIR, RRROCKET_PATH as _RRROCKET_PATH
 
-RRROCKET_PATH = os.path.join("bin", "rrrocket.exe")
-RAW_DIR = "data/raw"
-PROCESSED_DIR = "data/processed"
+RRROCKET_PATH = str(_RRROCKET_PATH)
+RAW_DIR = str(_RAW_DIR)
+PROCESSED_DIR = str(_PROCESSED_DIR)
 
 # Mapeamento de nome de pasta para label
 _FOLDER_LABEL_MAP = {

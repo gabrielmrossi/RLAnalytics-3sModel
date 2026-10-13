@@ -41,9 +41,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier, export_text
 
+from config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER, META_COLS
+from feature_catalog import FEATURE_DESCRIPTIONS, compute_z_score
 
 # Colunas de features (excluindo metadados)
-_META_COLS = {"label", "replay_name", "team", "team_label"}
+_META_COLS = META_COLS
 
 
 def load_dataset(csv_path: str = "data/processed/features_dataset.csv") -> pd.DataFrame:
@@ -396,12 +398,9 @@ class TacticalClusterKMeans:
     do Ballchasing — evita abordagens iterativas como LOO.
     """
 
-    _DARK_BG = "#1e1e1e"
-    _DARK_PAPER = "#1e1e1e"
-    _CLUSTER_PALETTE = [
-        "#e94560", "#2ecc71", "#3498db", "#e67e22",
-        "#9b59b6", "#1abc9c", "#f39c12", "#e74c3c",
-    ]
+    _DARK_BG = DARK_BG
+    _DARK_PAPER = DARK_PAPER
+    _CLUSTER_PALETTE = CLUSTER_PALETTE
 
     def __init__(self, n_clusters: int = 3, random_state: int = 42):
         self.n_clusters = n_clusters
@@ -666,8 +665,8 @@ class ModelBenchmarking:
     extraindo Acuracia, F1, Precisao e Recall ponderados.
     """
 
-    _DARK_BG = "#1e1e1e"
-    _DARK_PAPER = "#1e1e1e"
+    _DARK_BG = DARK_BG
+    _DARK_PAPER = DARK_PAPER
     _MODEL_COLORS = {
         "KNN": "#e94560",
         "Decision Tree": "#e67e22",
@@ -1042,58 +1041,7 @@ class ModelDrivenErrorDetector:
     """
 
     # Mapeamento de features para descricoes humanas
-    _FEATURE_DESCRIPTIONS = {
-        "ball_chase_ratio": {
-            "name": "Ball Chasing",
-            "direction": "above",  # valor alto = ruim
-            "desc": "Jogadores ficam muito proximos da bola ao mesmo tempo.",
-        },
-        "defensive_coverage_pct": {
-            "name": "Cobertura Defensiva",
-            "direction": "below",  # valor baixo = ruim
-            "desc": "Time fica sem defensores com frequencia.",
-        },
-        "triangle_area_mean": {
-            "name": "Area do Triangulo",
-            "direction": "below",
-            "desc": "Jogadores ficam muito agrupados, sem cobrir o campo.",
-        },
-        "triangle_area_std": {
-            "name": "Variacao do Triangulo",
-            "direction": "above",
-            "desc": "Formacao do time varia demais entre frames.",
-        },
-        "team_spread_mean": {
-            "name": "Dispersao Media",
-            "direction": "below",
-            "desc": "Jogadores ficam muito proximos uns dos outros.",
-        },
-        "team_spread_std": {
-            "name": "Rotacao Inconsistente",
-            "direction": "above",
-            "desc": "Rotacao inconsistente: hora agrupados, hora dispersos.",
-        },
-        "avg_boost_pct": {
-            "name": "Gestao de Boost",
-            "direction": "below",
-            "desc": "Time fica frequentemente sem boost disponivel.",
-        },
-        "avg_dist_to_ball": {
-            "name": "Distancia Media da Bola",
-            "direction": "any",
-            "desc": "Distancia media a bola fora do padrao de rank alto.",
-        },
-        "min_player_dist_to_ball": {
-            "name": "Proximidade Minima da Bola",
-            "direction": "any",
-            "desc": "Distancia minima a bola fora do padrao de rank alto.",
-        },
-        "avg_speed": {
-            "name": "Velocidade Media",
-            "direction": "below",
-            "desc": "Velocidade media dos jogadores abaixo do padrao.",
-        },
-    }
+    _FEATURE_DESCRIPTIONS = FEATURE_DESCRIPTIONS
 
     def __init__(self, n_estimators: int = 100, random_state: int = 42):
         self.rf = RankClassifierRandomForest(
@@ -1196,7 +1144,7 @@ class ModelDrivenErrorDetector:
             importance = self.feature_importances.get(feat_name, 0.0)
 
             # Z-score: quanto essa feature desvia do padrao higher
-            raw_z = (val - ref_mean) / ref_std
+            raw_z = compute_z_score(val, ref_mean, ref_std)
 
             # Verificar direcao do desvio
             feat_info = self._FEATURE_DESCRIPTIONS.get(feat_name, {})
