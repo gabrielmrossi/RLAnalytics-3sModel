@@ -1,6 +1,6 @@
 # RLAnalytics-3sModel
 
-Análise de telemetria e modelagem comportamental para partidas 3v3 de Rocket League (TCC).
+Análise de rotação e modelagem comportamental para partidas 3v3 de Rocket League (TCC).
 
 ---
 
