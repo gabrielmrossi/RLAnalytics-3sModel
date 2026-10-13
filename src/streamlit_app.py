@@ -29,9 +29,7 @@ from knn_model import (
     RankClassifierRandomForest,
     TacticalClusterKMeans,
     ModelBenchmarking,
-    PositioningErrorDetector,
     ModelDrivenErrorDetector,
-    load_dataset,
     get_X_y,
 )
 
@@ -453,7 +451,7 @@ def get_available_replays() -> dict[str, list[str]]:
 
 
 def _load_feature_dataset():
-    """Carrega dataset de features, gerando se necessario. Retorna (df, X, y, feature_names, k) ou None."""
+    """Carrega dataset de features. Retorna (df, X, y, feature_names, k) ou None se não existir."""
     csv_path = "data/processed/features_dataset.csv"
     if not os.path.exists(csv_path):
         return None
@@ -471,8 +469,6 @@ _MODEL_PATH = "data/processed/model_detector.joblib"
 @st.cache_resource
 def _get_trained_detector(_df_hash, X, y, feature_names):
     """Treina ou carrega o detector do disco. Resultado fica em cache do Streamlit."""
-    import hashlib
-
     model_path = _MODEL_PATH
 
     # Tenta carregar modelo salvo
@@ -531,7 +527,6 @@ def draw_field(fig: go.Figure) -> None:
 def create_rotation_triangle_plot(
     positions_df: pd.DataFrame,
     frame_idx: int,
-    players: list[dict],
 ) -> go.Figure:
     fig = go.Figure()
     draw_field(fig)
@@ -618,7 +613,7 @@ def create_rotation_triangle_plot(
     return fig
 
 
-def render_scoreboard(goals: list[dict], current_time: float, total_time: float):
+def render_scoreboard(goals: list[dict], current_time: float):
     blue_goals = sum(1 for g in goals if g.get("player_team") == 0)
     orange_goals = sum(1 for g in goals if g.get("player_team") == 1)
 
@@ -764,9 +759,9 @@ def tab_replay():
     game_time = current_time - start_time
 
     current_goals = [g for g in result["goals"] if g["frame"] <= current_frame]
-    render_scoreboard(current_goals, game_time, total_time - start_time)
+    render_scoreboard(current_goals, game_time)
 
-    fig = create_rotation_triangle_plot(positions, current_frame, result["players"])
+    fig = create_rotation_triangle_plot(positions, current_frame)
     st.plotly_chart(fig, use_container_width=True)
 
     if st.session_state.play_active:
@@ -1337,7 +1332,7 @@ def tab_models():
 def tab_errors():
     st.header("Erros Taticos")
     st.markdown(
-        "Diagnostico alimentado pelo **Random Forest** (90.5% de acuracia). "
+        "Diagnostico alimentado pelo **Random Forest** com validação cruzada. "
         "Os erros sao ponderados pela **importancia que o modelo atribui a cada feature** "
         "na hora de diferenciar ranks altos de baixos."
     )

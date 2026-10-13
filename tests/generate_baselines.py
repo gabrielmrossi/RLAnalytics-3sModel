@@ -18,7 +18,6 @@ sys.path.insert(0, str(ROOT_DIR / "src"))
 
 from analyzer import ReplayAnalyzer
 from knn_model import (
-    FEATURE_NAMES,
     ModelBenchmarking,
     ModelDrivenErrorDetector,
     PositioningErrorDetector,

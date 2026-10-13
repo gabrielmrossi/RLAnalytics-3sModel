@@ -7,7 +7,6 @@ boost e ritmo de jogo. Produz um DataFrame pronto para o modelo KNN.
 
 import json
 import math
-import os
 from pathlib import Path
 from typing import Any
 
@@ -19,11 +18,8 @@ from parser import discover_replays, PROCESSED_DIR
 
 
 # ──────────────────────────────────────────────
-#  Constantes do campo de Rocket League
+#  Constantes de Telemetria
 # ──────────────────────────────────────────────
-# Campo oficial (unreal units): 10240 x 8192
-FIELD_HALF_LENGTH = 5120  # y: -5120 a +5120
-FIELD_HALF_WIDTH = 4096   # x: -4096 a +4096
 
 # Threshold para "perto da bola" (ball-chasing)
 BALL_CHASE_DIST = 1500  # unreal units (~15m)

@@ -11,9 +11,7 @@ Pipeline:
     7. Detector de erros de posicionamento por limiares
 """
 
-import json
 import os
-from pathlib import Path
 from typing import Any
 
 import joblib
@@ -46,19 +44,6 @@ from sklearn.tree import DecisionTreeClassifier, export_text
 
 # Colunas de features (excluindo metadados)
 _META_COLS = {"label", "replay_name", "team", "team_label"}
-
-FEATURE_NAMES = [
-    "avg_boost_pct",
-    "avg_dist_to_ball",
-    "avg_speed",
-    "ball_chase_ratio",
-    "defensive_coverage_pct",
-    "min_player_dist_to_ball",
-    "team_spread_mean",
-    "team_spread_std",
-    "triangle_area_mean",
-    "triangle_area_std",
-]
 
 
 def load_dataset(csv_path: str = "data/processed/features_dataset.csv") -> pd.DataFrame:
@@ -118,7 +103,7 @@ class RankClassifierKNN:
 
         for train_idx, test_idx in loo.split(X):
             X_train, X_test = X[train_idx], X[test_idx]
-            y_train, y_test = y[train_idx], y[test_idx]
+            y_train = y[train_idx]
 
             scaler = StandardScaler()
             X_train_s = scaler.fit_transform(X_train)
@@ -203,7 +188,7 @@ class RankClassifierTree:
 
         for train_idx, test_idx in loo.split(X):
             X_train, X_test = X[train_idx], X[test_idx]
-            y_train, y_test = y[train_idx], y[test_idx]
+            y_train = y[train_idx]
 
             scaler = StandardScaler()
             X_train_s = scaler.fit_transform(X_train)
@@ -298,7 +283,7 @@ class RankClassifierRandomForest:
 
         for train_idx, test_idx in loo.split(X):
             X_train, X_test = X[train_idx], X[test_idx]
-            y_train, y_test = y[train_idx], y[test_idx]
+            y_train = y[train_idx]
 
             scaler = StandardScaler()
             X_train_s = scaler.fit_transform(X_train)

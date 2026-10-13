@@ -41,9 +41,6 @@ class ReplayAnalyzer:
         self._component_to_car: dict[int, int] = {} # ANY CarComponent actor_id -> car_actor_id
         self._rigidbody_object_ids: set[int] = set()  # object_ids que indicam RigidBody
 
-        # Lookup reverso: actor_id -> object_name (para new_actors)
-        self._actor_archetypes: dict[int, str] = {}
-
     # ──────────────────────────────────────────────
     #  Etapa 1: Mapear Actors
     # ──────────────────────────────────────────────
@@ -67,7 +64,6 @@ class ReplayAnalyzer:
         obj_player_name_id = None
         obj_vehicle_link_id = None
         obj_player_ri_id = None
-        team_object_ids: dict[int, int] = {}  # object_id -> team number
 
         for idx, obj_name in enumerate(self.objects):
             if obj_name == "Engine.PlayerReplicationInfo:PlayerName":
@@ -76,13 +72,6 @@ class ReplayAnalyzer:
                 obj_vehicle_link_id = idx
             elif obj_name == "Engine.Pawn:PlayerReplicationInfo":
                 obj_player_ri_id = idx
-
-        # Mapear archetypes de teams
-        for idx, obj_name in enumerate(self.objects):
-            if obj_name == "Archetypes.Teams.Team0":
-                team_object_ids[idx] = 0
-            elif obj_name == "Archetypes.Teams.Team1":
-                team_object_ids[idx] = 1
 
         # Passo 2: Percorrer frames para construir registros
         # PRIs: actor_id -> {name, team}
@@ -102,7 +91,6 @@ class ReplayAnalyzer:
                     continue
 
                 obj_name = self.objects[oid]
-                self._actor_archetypes[aid] = obj_name
 
                 if "Car.Car_Default" in obj_name:
                     self._car_actors.setdefault(aid, {})
@@ -538,11 +526,6 @@ def compute_triangle_area(p1: tuple, p2: tuple, p3: tuple) -> float:
     return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0)
 
 
-def compute_triangle_centroid(p1: tuple, p2: tuple, p3: tuple) -> tuple[float, float]:
-    """Calcula o centróide de um triângulo."""
-    return ((p1[0] + p2[0] + p3[0]) / 3.0, (p1[1] + p2[1] + p3[1]) / 3.0)
-
-
 def compute_distance(p1: tuple, p2: tuple) -> float:
     """Distância euclidiana entre 2 pontos (x, y)."""
     return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
@@ -550,7 +533,6 @@ def compute_distance(p1: tuple, p2: tuple) -> float:
 
 if __name__ == "__main__":
     import json
-    import sys
 
     # Teste rápido com o replay de teste
     test_path = "data/processed/teste.json"
