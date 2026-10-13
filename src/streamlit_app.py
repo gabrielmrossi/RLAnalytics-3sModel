@@ -21,6 +21,23 @@ import streamlit as st
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+from config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
+from visualization.interactive import (
+    build_cluster_donut_chart,
+    build_confusion_matrices_chart,
+    build_elbow_chart,
+    build_feature_importances_chart,
+    build_pca_clusters_chart,
+    build_radar_chart,
+)
+from visualization.static import (
+    figure_to_bytes,
+    plot_confusion_matrices_static,
+    plot_elbow_static,
+    plot_feature_importances_static,
+    plot_pca_clusters_static,
+    plot_radar_static,
+)
 from analyzer import ReplayAnalyzer, compute_triangle_area, compute_distance
 from parser import discover_replays, PROCESSED_DIR
 from feature_engineering import build_dataset, extract_team_features
@@ -385,6 +402,38 @@ def _get_trained_detector(_df_hash, X, y, feature_names):
     detector.save(model_path)
     predictions = detector.predict(X)
     return detector, predictions
+
+
+@st.cache_data
+def _get_benchmarking_results(_df_hash, X, y, k):
+    """Executa benchmarking comparativo com cache no Streamlit."""
+    bench = ModelBenchmarking(cv=5, random_state=42)
+    bench_df = bench.evaluate(X, y, knn_k=k)
+    return bench_df, bench.confusion_matrices_
+
+
+@st.cache_data
+def _get_rf_importances_data(_df_hash, X, y, feature_names):
+    """Treina Random Forest e obtém importâncias relativas com cache no Streamlit."""
+    rf = RankClassifierRandomForest(n_estimators=100, random_state=42)
+    rf.train(X, y, feature_names)
+    return rf.get_feature_importances()
+
+
+@st.cache_data
+def _get_kmeans_elbow_data(_df_hash, X):
+    """Calcula inércias da curva do cotovelo do K-Means com cache no Streamlit."""
+    clusterer = TacticalClusterKMeans(n_clusters=3, random_state=42)
+    return clusterer.compute_elbow(X, k_range=range(2, 9))
+
+
+@st.cache_data
+def _get_kmeans_clusters_data(_df_hash, X, n_clusters: int):
+    """Executa K-Means e PCA para um n_clusters específico com cache no Streamlit."""
+    clusterer = TacticalClusterKMeans(n_clusters=n_clusters, random_state=42)
+    labels = clusterer.fit_predict(X)
+    X_pca, var_explained, loadings = clusterer.compute_pca(X)
+    return labels, X_pca, var_explained, loadings, clusterer.silhouette_
 
 
 # ──────────────────────────────────────────────
@@ -1016,6 +1065,15 @@ def tab_comparison():
         "Compara o formato do estilo de jogo entre os grupos. "
         "Formas mais amplas indicam maior domínio dos fundamentos analisados."
     )
+    radar_bytes = figure_to_bytes(
+        plot_radar_static(translated_cols, higher_norm.values, lower_norm.values)
+    )
+    st.download_button(
+        "📥 Baixar Gráfico Radar (PNG 300 DPI)",
+        data=radar_bytes,
+        file_name="radar_higher_vs_lower.png",
+        mime="image/png",
+    )
 
     # Tabela de diferencas (com labels traduzidos)
     st.subheader("Diferenças por Característica")
@@ -1060,6 +1118,8 @@ def tab_models():
         "🔬 Clusterizacao",
     ])
 
+    df_hash = f"{len(df)}_{len(feature_names)}"
+
     # ── Sub-tab 1: Comparativo ──────────────────
 
     with sub1:
@@ -1069,8 +1129,7 @@ def tab_models():
             "**StratifiedKFold (cv=5)** nos mesmos folds."
         )
 
-        bench = ModelBenchmarking(cv=5, random_state=42)
-        bench_df = bench.evaluate(X, y, knn_k=k)
+        bench_df, confusion_matrices = _get_benchmarking_results(df_hash, X, y, k)
 
         # Tabela
         st.dataframe(
@@ -1081,11 +1140,19 @@ def tab_models():
 
         # Matrizes de confusao
         st.markdown("#### Matrizes de Confusao Normalizadas")
-        fig_cm = bench.plot_confusion_matrices(
-            save_path="data/processed/models_comparison_cm.png"
-        )
+        fig_cm = build_confusion_matrices_chart(confusion_matrices, ["lower", "higher"])
         st.plotly_chart(fig_cm, use_container_width=True)
-        
+
+        cm_bytes = figure_to_bytes(
+            plot_confusion_matrices_static(confusion_matrices, ["lower", "higher"])
+        )
+        st.download_button(
+            "📥 Baixar Matrizes de Confusão (PNG 300 DPI)",
+            data=cm_bytes,
+            file_name="models_comparison_cm.png",
+            mime="image/png",
+        )
+
         # Detalhes tecnicos (Decision Tree Rules)
         with st.expander("Detalhes Tecnicos (Regras da Decision Tree)", expanded=False):
             st.markdown("Regras extraidas da Decision Tree ajustada com todo o dataset.")
@@ -1102,9 +1169,7 @@ def tab_models():
             "do Random Forest — o metodo mais robusto entre os 3 modelos."
         )
 
-        rf = RankClassifierRandomForest(n_estimators=100, random_state=42)
-        rf.train(X, y, feature_names)
-        rf_imp = rf.get_feature_importances()
+        rf_imp = _get_rf_importances_data(df_hash, X, y, feature_names)
 
         if rf_imp:
             # Aplicar traducao nas chaves do dicionario de importancia
@@ -1129,9 +1194,12 @@ def tab_models():
                 "Variáveis no topo são os maiores divisores de água entre ranks altos e baixos."
             )
 
-            # Salvar PNG para uso externo
-            rf.plot_feature_importances(
-                save_path="data/processed/rf_feature_importance.png"
+            rf_bytes = figure_to_bytes(plot_feature_importances_static(rf_imp))
+            st.download_button(
+                "📥 Baixar Importância das Features (PNG 300 DPI)",
+                data=rf_bytes,
+                file_name="rf_feature_importance.png",
+                mime="image/png",
             )
 
     # ── Sub-tab 3: Clusterizacao ────────────────
@@ -1147,71 +1215,70 @@ def tab_models():
             "Numero de clusters (k)", min_value=2, max_value=8, value=3, key="kmeans_k"
         )
 
-        clusterer = TacticalClusterKMeans(n_clusters=n_clusters, random_state=42)
-
         # Elbow
         col_elbow, col_metrics = st.columns([2, 1])
         with col_elbow:
-            fig_elbow = clusterer.elbow_analysis(
-                X, k_range=range(2, 9),
-                save_path="data/processed/kmeans_elbow.png",
-            )
+            k_vals, inertias = _get_kmeans_elbow_data(df_hash, X)
+            fig_elbow = build_elbow_chart(k_vals, inertias)
             st.plotly_chart(fig_elbow, use_container_width=True)
 
-        # Fit
-        cluster_labels = clusterer.fit_predict(X)
+            elbow_bytes = figure_to_bytes(plot_elbow_static(k_vals, inertias))
+            st.download_button(
+                "📥 Baixar Curva do Cotovelo (PNG 300 DPI)",
+                data=elbow_bytes,
+                file_name="kmeans_elbow.png",
+                mime="image/png",
+            )
+
+        # Fit & PCA via cache
+        cluster_labels, X_pca, var_explained, loadings, silhouette = _get_kmeans_clusters_data(
+            df_hash, X, n_clusters
+        )
 
         with col_metrics:
             st.metric(
                 "Silhouette Score",
-                f"{clusterer.silhouette_:.4f}" if clusterer.silhouette_ is not None else "N/A",
+                f"{silhouette:.4f}" if silhouette is not None else "N/A",
             )
-            # Contagens de amostras (mantidas aqui como referencia textual)
             unique, counts = np.unique(cluster_labels, return_counts=True)
 
-        # Donut Chart — distribuicao de amostras por cluster (lado a lado com PCA)
-        cluster_colors = [
-            "#3498db", "#e67e22", "#2ecc71", "#9b59b6",
-            "#e74c3c", "#1abc9c", "#f39c12", "#34495e",
-        ]
-        donut_labels = [f"Perfil {u}" for u in unique]
-        fig_donut = go.Figure(go.Pie(
-            labels=donut_labels,
-            values=counts,
-            hole=0.55,
-            marker=dict(colors=cluster_colors[:len(unique)], line=dict(color="#0e1117", width=2)),
-            textinfo="label+percent",
-            textfont=dict(size=12, color="white"),
-            hovertemplate="%{label}<br>Amostras: %{value} (%{percent})<extra></extra>",
-        ))
-        fig_donut.update_layout(
-            title=dict(text="Distribuição dos Perfis Táticos", font=dict(color="white", size=14)),
-            plot_bgcolor=_DARK_BG, paper_bgcolor=_DARK_BG,
-            font=dict(color="white"), height=360,
-            showlegend=True,
-            legend=dict(bgcolor="rgba(0,0,0,0.5)", font=dict(color="white")),
-            margin=dict(l=20, r=20, t=40, b=20),
-        )
+        # Donut Chart sincronizado com CLUSTER_PALETTE
+        fig_donut = build_cluster_donut_chart(unique, counts, cluster_palette=CLUSTER_PALETTE)
 
         # PCA + Donut lado a lado
         pca_col, donut_col = st.columns([2, 1])
         with pca_col:
-            fig_pca = clusterer.plot_pca_clusters(
-                X, cluster_labels, feature_names=feature_names,
-                save_path="data/processed/kmeans_pca.png",
+            fig_pca = build_pca_clusters_chart(
+                X_pca,
+                cluster_labels,
+                var_explained,
+                cluster_palette=CLUSTER_PALETTE,
+                feature_names=feature_names,
+                loadings=loadings,
             )
             st.plotly_chart(fig_pca, use_container_width=True)
             st.caption(
                 "Agrupa times por similaridade de comportamento, independentemente do rank, "
                 "ajudando a identificar estilos de jogo únicos."
             )
+
+            pca_bytes = figure_to_bytes(
+                plot_pca_clusters_static(X_pca, cluster_labels, var_explained, CLUSTER_PALETTE)
+            )
+            st.download_button(
+                "📥 Baixar Clusters PCA (PNG 300 DPI)",
+                data=pca_bytes,
+                file_name="kmeans_pca.png",
+                mime="image/png",
+            )
+
         with donut_col:
             st.plotly_chart(fig_donut, use_container_width=True)
 
         # Resumo
         with st.expander("Perfil medio por cluster", expanded=False):
+            clusterer = TacticalClusterKMeans(n_clusters=n_clusters, random_state=42)
             summary_df = clusterer.cluster_summary(df, cluster_labels, feature_names)
-            # Renomear colunas de features para PT-BR na exibicao
             summary_df = summary_df.copy()
             summary_df.columns = [
                 _translate(c) if c in FEATURE_LABELS else c for c in summary_df.columns

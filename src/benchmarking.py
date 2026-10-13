@@ -2,15 +2,11 @@
 benchmarking.py — Avaliação comparativa de modelos supervisionados via StratifiedKFold.
 """
 
-import os
 from typing import Any
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import seaborn as sns
-from plotly.subplots import make_subplots
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold
@@ -19,6 +15,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
 from config import DARK_BG, DARK_PAPER
+from visualization.interactive import build_confusion_matrices_chart
+from visualization.static import plot_confusion_matrices_static, save_figure
 
 
 class ModelBenchmarking:
@@ -130,76 +128,14 @@ class ModelBenchmarking:
 
     def plot_confusion_matrices(
         self,
-        save_path: str = "data/processed/models_comparison_cm.png",
+        save_path: str | None = None,
     ) -> go.Figure:
         """Gera 3 matrizes de confusao normalizadas lado a lado."""
         if not self.confusion_matrices_:
             raise RuntimeError("Execute evaluate() antes de plotar.")
 
-        model_names = list(self.confusion_matrices_.keys())
-
-        # Matplotlib / Seaborn (PNG)
-        sns.set_theme(style="white")
-        fig_mpl, axes = plt.subplots(1, len(model_names), figsize=(5 * len(model_names), 4))
-        if len(model_names) == 1:
-            axes = [axes]
-
-        for ax, name in zip(axes, model_names):
-            cm_norm = self.confusion_matrices_[name]
-            sns.heatmap(
-                cm_norm, annot=True, fmt=".2%", cmap="YlOrRd",
-                xticklabels=self._LABELS, yticklabels=self._LABELS,
-                ax=ax, cbar=False, square=True,
-                annot_kws={"fontsize": 12},
-            )
-            ax.set_title(name, fontsize=13, fontweight="bold")
-            ax.set_xlabel("Previsto", fontsize=10)
-            ax.set_ylabel("Real", fontsize=10)
-
-        plt.suptitle(
-            "Matrizes de Confusao Normalizadas (StratifiedKFold)",
-            fontsize=15, fontweight="bold", y=1.02,
-        )
-        plt.tight_layout()
         if save_path:
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
-            fig_mpl.savefig(save_path, dpi=300, bbox_inches="tight")
-        plt.close(fig_mpl)
+            fig_mpl = plot_confusion_matrices_static(self.confusion_matrices_, self._LABELS)
+            save_figure(fig_mpl, save_path)
 
-        # Plotly
-        fig_plotly = make_subplots(
-            rows=1, cols=len(model_names),
-            subplot_titles=model_names,
-            horizontal_spacing=0.08,
-        )
-
-        for i, name in enumerate(model_names, start=1):
-            cm_norm = self.confusion_matrices_[name]
-            color = self._MODEL_COLORS.get(name, "#e94560")
-            text_matrix = [[f"{cm_norm[r][c]:.1%}" for c in range(len(self._LABELS))]
-                           for r in range(len(self._LABELS))]
-
-            fig_plotly.add_trace(
-                go.Heatmap(
-                    z=cm_norm,
-                    x=[f"Pred: {l}" for l in self._LABELS],
-                    y=[f"Real: {l}" for l in self._LABELS],
-                    text=text_matrix,
-                    texttemplate="%{text}",
-                    colorscale=[[0, self._DARK_BG], [1, color]],
-                    showscale=False,
-                    hovertemplate="Real: %{y}<br>Previsto: %{x}<br>Taxa: %{text}<extra></extra>",
-                ),
-                row=1, col=i,
-            )
-
-        fig_plotly.update_layout(
-            title=dict(text="Matrizes de Confusao Normalizadas (StratifiedKFold)", font=dict(size=16)),
-            plot_bgcolor=self._DARK_BG,
-            paper_bgcolor=self._DARK_PAPER,
-            font=dict(color="white"),
-            height=400,
-            margin=dict(l=60, r=30, t=80, b=60),
-        )
-
-        return fig_plotly
+        return build_confusion_matrices_chart(self.confusion_matrices_, self._LABELS)

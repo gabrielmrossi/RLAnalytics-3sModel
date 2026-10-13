@@ -5,10 +5,8 @@ Implementa KNN, Decision Tree e Random Forest com validação Leave-One-Out comp
 
 from typing import Any, Callable
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import LeaveOneOut
@@ -244,44 +242,12 @@ class RankClassifierRandomForest(_SklearnRankClassifierBase):
         self,
         save_path: str | None = None,
         title: str = "Importancia das Features (Random Forest)",
-    ) -> plt.Figure:
+    ) -> Any:
         """Gera gráfico de barras horizontal com Seaborn/Matplotlib."""
+        from visualization.static import plot_feature_importances_static, save_figure
+
         imp_dict = self.get_feature_importances()
-        if not imp_dict:
-            fig, ax = plt.subplots()
-            ax.text(0.5, 0.5, "Modelo nao treinado", ha="center", va="center")
-            return fig
-
-        imp_df = pd.DataFrame(
-            {"feature": list(imp_dict.keys()), "importance": list(imp_dict.values())}
-        )
-
-        sns.set_theme(style="whitegrid")
-        fig, ax = plt.subplots(figsize=(10, max(4, len(imp_df) * 0.5)))
-        palette = sns.color_palette("viridis", len(imp_df))
-        barplot = sns.barplot(
-            data=imp_df, x="importance", y="feature",
-            palette=palette, ax=ax,
-        )
-
-        for p in barplot.patches:
-            val = p.get_width()
-            ax.annotate(
-                f"{val:.2%}",
-                (val, p.get_y() + p.get_height() / 2.0),
-                ha="left", va="center", fontsize=10, color="black",
-                xytext=(5, 0), textcoords="offset points",
-            )
-
-        ax.set_title(title, fontsize=14, fontweight="bold", pad=15)
-        ax.set_xlabel("Importancia Relativa (MDI)", fontsize=11)
-        ax.set_ylabel("Feature de Telemetria", fontsize=11)
-
-        max_val = imp_df["importance"].max() if not imp_df.empty else 0.1
-        ax.set_xlim(0, max_val * 1.2)
-        plt.tight_layout()
-
+        fig = plot_feature_importances_static(imp_dict, title=title)
         if save_path:
-            fig.savefig(save_path, dpi=300, bbox_inches="tight")
-
+            save_figure(fig, save_path)
         return fig
