@@ -1,0 +1,30 @@
+# Ambientes virtuais
+.venv/
+venv/
+env/
+ENV/
+
+# Bytecode Python e caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Dados brutos e telemetria pesada (replays e dumps JSON)
+data/raw/
+data/processed/*.json
+data/processed/*.replay
+data/**/*.json
+data/**/*.replay
+
+# Ferramentas e IDEs
+.kilo/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+desktop.ini
