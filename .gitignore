@@ -9,6 +9,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+*.egg-info/
+build/
+dist/
+*.egg
 
 # Dados brutos e telemetria pesada (replays e dumps JSON)
 data/raw/
