@@ -11,7 +11,7 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         "display_name": "Ball Chasing",
         "ui_label": "Taxa de Ball Chasing",
         "direction": "above",  # valor alto = ruim
-        "desc": "Jogadores ficam muito proximos da bola ao mesmo tempo.",
+        "desc": "Jogadores ficam muito próximos da bola ao mesmo tempo.",
         "narratives": {
             "good": "A disciplina de rotação é boa — os jogadores evitam disputar a bola ao mesmo tempo.",
             "neutral": "A rotação é aceitável, mas há momentos em que mais de um jogador vai na bola ao mesmo tempo.",
@@ -22,7 +22,7 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         "display_name": "Cobertura Defensiva",
         "ui_label": "Cobertura Defensiva (%)",
         "direction": "below",  # valor baixo = ruim
-        "desc": "Time fica sem defensores com frequencia.",
+        "desc": "Time fica sem defensores com frequência.",
         "narratives": {
             "good": "A cobertura defensiva é sólida, com pelo menos um jogador protegendo a retaguarda na maior parte do jogo.",
             "neutral": "A defesa está presente na maioria das jogadas, mas há janelas de vulnerabilidade onde o gol fica exposto.",
@@ -30,7 +30,7 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "triangle_area_mean": {
-        "display_name": "Area do Triangulo",
+        "display_name": "Área do Triângulo",
         "ui_label": "Área Média do Triângulo",
         "direction": "below",
         "desc": "Jogadores ficam muito agrupados, sem cobrir o campo.",
@@ -41,10 +41,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "triangle_area_std": {
-        "display_name": "Variacao do Triangulo",
+        "display_name": "Variação do Triângulo",
         "ui_label": "Variação da Área do Triângulo",
         "direction": "above",
-        "desc": "Formacao do time varia demais entre frames.",
+        "desc": "Formação do time varia excessivamente entre frames.",
         "narratives": {
             "good": "A formação é <strong>estável</strong> ao longo da partida, indicando rotações bem coordenadas.",
             "neutral": "A formação oscila moderadamente ao longo do jogo, o que é aceitável.",
@@ -52,10 +52,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "team_spread_mean": {
-        "display_name": "Dispersao Media",
+        "display_name": "Dispersão Média",
         "ui_label": "Dispersão Média da Equipe",
         "direction": "below",
-        "desc": "Jogadores ficam muito proximos uns dos outros.",
+        "desc": "Jogadores ficam muito próximos uns dos outros.",
         "narratives": {
             "good": "A distância entre os jogadores é <strong>bem distribuída</strong>, facilitando passes e coberturas.",
             "neutral": "A distribuição dos jogadores pelo campo está dentro do esperado.",
@@ -63,10 +63,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "team_spread_std": {
-        "display_name": "Rotacao Inconsistente",
+        "display_name": "Rotação Inconsistente",
         "ui_label": "Variação da Dispersão",
         "direction": "above",
-        "desc": "Rotacao inconsistente: hora agrupados, hora dispersos.",
+        "desc": "Rotação inconsistente: ora agrupados, ora dispersos.",
         "narratives": {
             "good": "A rotação é <strong>consistente</strong>, com os jogadores mantendo uma distribuição regular ao longo da partida.",
             "neutral": "A consistência da rotação é razoável, com algumas variações.",
@@ -74,10 +74,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "avg_boost_pct": {
-        "display_name": "Gestao de Boost",
+        "display_name": "Gestão de Boost",
         "ui_label": "Média de Boost (%)",
         "direction": "below",
-        "desc": "Time fica frequentemente sem boost disponivel.",
+        "desc": "Time fica frequentemente sem boost disponível.",
         "narratives": {
             "good": "A gestão de boost é <strong>eficiente</strong>, com boas reservas mantidas ao longo da partida.",
             "neutral": "O consumo de boost está dentro do normal, sem excessos nem escassez.",
@@ -85,10 +85,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "avg_dist_to_ball": {
-        "display_name": "Distancia Media da Bola",
+        "display_name": "Distância Média da Bola",
         "ui_label": "Dist. Média até a Bola",
         "direction": "any",
-        "desc": "Distancia media a bola fora do padrao de rank alto.",
+        "desc": "Distância média à bola fora do padrão de rank alto.",
         "narratives": {
             "good": "O posicionamento em relação à bola está <strong>equilibrado</strong>, sem ficar longe nem perto demais.",
             "neutral": "A distância média até a bola está aceitável, mas pode ser otimizada.",
@@ -97,10 +97,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "min_player_dist_to_ball": {
-        "display_name": "Proximidade Minima da Bola",
+        "display_name": "Proximidade Mínima da Bola",
         "ui_label": "Dist. Mínima à Bola",
         "direction": "any",
-        "desc": "Distancia minima a bola fora do padrao de rank alto.",
+        "desc": "Distância mínima à bola fora do padrão de rank alto.",
         "narratives": {
             "good": "O jogador mais próximo da bola mantém uma <strong>distância saudável</strong>, com espaço para ler e reagir.",
             "neutral": "A distância do jogador mais próximo à bola está dentro do padrão.",
@@ -109,10 +109,10 @@ FEATURE_CATALOG: dict[str, dict[str, Any]] = {
         },
     },
     "avg_speed": {
-        "display_name": "Velocidade Media",
+        "display_name": "Velocidade Média",
         "ui_label": "Velocidade Média",
         "direction": "below",
-        "desc": "Velocidade media dos jogadores abaixo do padrao.",
+        "desc": "Velocidade média dos jogadores abaixo do padrão.",
         "narratives": {
             "good": "O ritmo de jogo é <strong>alto</strong>, com movimentação rápida e intencional pelo campo.",
             "neutral": "A velocidade de movimentação está na média.",

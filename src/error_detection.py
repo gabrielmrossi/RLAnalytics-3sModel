@@ -87,9 +87,9 @@ class PositioningErrorDetector:
                     "value": val,
                     "reference": round(ref_mean, 1),
                     "description": (
-                        f"Ball-chase ratio ({val:.1f}%) esta {z_score:.1f} desvios acima "
-                        f"da referencia de rank alto ({ref_mean:.1f}%). "
-                        f"Jogadores ficam muito proximos da bola ao mesmo tempo."
+                        f"Ball-chase ratio ({val:.1f}%) está {z_score:.1f} desvios acima "
+                        f"da referência de rank alto ({ref_mean:.1f}%). "
+                        f"Jogadores ficam muito próximos da bola ao mesmo tempo."
                     ),
                 })
 
@@ -107,9 +107,9 @@ class PositioningErrorDetector:
                     "value": val,
                     "reference": round(ref_mean, 1),
                     "description": (
-                        f"Cobertura defensiva ({val:.1f}%) esta {z_score:.1f} desvios abaixo "
-                        f"da referencia ({ref_mean:.1f}%). "
-                        f"Time fica sem defensores com frequencia."
+                        f"Cobertura defensiva ({val:.1f}%) está {z_score:.1f} desvios abaixo "
+                        f"da referência ({ref_mean:.1f}%). "
+                        f"Time fica sem defensores com frequência."
                     ),
                 })
 
@@ -127,8 +127,8 @@ class PositioningErrorDetector:
                     "value": val,
                     "reference": round(ref_mean, 1),
                     "description": (
-                        f"Area media do triangulo ({val:.0f}) esta {z_score:.1f} desvios abaixo "
-                        f"da referencia ({ref_mean:.0f}). "
+                        f"Área média do triângulo ({val:.0f}) está {z_score:.1f} desvios abaixo "
+                        f"da referência ({ref_mean:.0f}). "
                         f"Jogadores ficam muito agrupados, sem cobrir o campo."
                     ),
                 })
@@ -147,9 +147,9 @@ class PositioningErrorDetector:
                     "value": val,
                     "reference": round(ref_mean, 1),
                     "description": (
-                        f"Variacao da dispersao ({val:.0f}) esta {z_score:.1f} desvios acima "
-                        f"da referencia ({ref_mean:.0f}). "
-                        f"Rotacao inconsistente: hora agrupados, hora dispersos."
+                        f"Variação da dispersão ({val:.0f}) está {z_score:.1f} desvios acima "
+                        f"da referência ({ref_mean:.0f}). "
+                        f"Rotação inconsistente: ora agrupados, ora dispersos."
                     ),
                 })
 
@@ -167,9 +167,9 @@ class PositioningErrorDetector:
                     "value": val,
                     "reference": round(ref_mean, 1),
                     "description": (
-                        f"Boost medio ({val:.1f}%) esta {z_score:.1f} desvios abaixo "
-                        f"da referencia ({ref_mean:.1f}%). "
-                        f"Time fica frequentemente sem boost disponivel."
+                        f"Boost médio ({val:.1f}%) está {z_score:.1f} desvios abaixo "
+                        f"da referência ({ref_mean:.1f}%). "
+                        f"Time fica frequentemente sem boost disponível."
                     ),
                 })
 
@@ -284,15 +284,15 @@ class ModelDrivenErrorDetector:
                 severity = "media"
 
             feat_display = feat_info.get("name", feat_name)
-            feat_desc = feat_info.get("desc", f"Feature '{feat_name}' fora do padrao.")
+            feat_desc = feat_info.get("desc", f"Feature '{feat_name}' fora do padrão.")
 
             if direction == "above":
-                desvio_text = f"{val:.1f} esta {raw_z:.1f}σ acima da ref. ({ref_mean:.1f})"
+                desvio_text = f"{val:.1f} está {raw_z:.1f}σ acima da ref. ({ref_mean:.1f})"
             elif direction == "below":
-                desvio_text = f"{val:.1f} esta {abs(raw_z):.1f}σ abaixo da ref. ({ref_mean:.1f})"
+                desvio_text = f"{val:.1f} está {abs(raw_z):.1f}σ abaixo da ref. ({ref_mean:.1f})"
             else:
                 dir_word = "acima" if raw_z > 0 else "abaixo"
-                desvio_text = f"{val:.1f} esta {abs(raw_z):.1f}σ {dir_word} da ref. ({ref_mean:.1f})"
+                desvio_text = f"{val:.1f} está {abs(raw_z):.1f}σ {dir_word} da ref. ({ref_mean:.1f})"
 
             errors.append({
                 "type": feat_display,
