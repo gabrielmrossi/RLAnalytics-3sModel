@@ -33,6 +33,7 @@ class ReplayAnalyzer:
         self.data = data
         self.objects: list[str] = data.get("objects", [])
         self.frames: list[dict] = data.get("network_frames", {}).get("frames", [])
+        self._obj_to_id: dict[str, int] = {name: idx for idx, name in enumerate(self.objects)}
 
         # Registros preenchidos por build_actor_registry()
         self._car_actors: dict[int, dict] = {}     # car_actor_id -> {pri_id, name, team}
@@ -40,6 +41,34 @@ class ReplayAnalyzer:
         self._ball_actor_ids: set[int] = set()      # actor_ids da bola
         self._component_to_car: dict[int, int] = {} # ANY CarComponent actor_id -> car_actor_id
         self._rigidbody_object_ids: set[int] = set()  # object_ids que indicam RigidBody
+
+    def _get_object_id(self, name: str) -> int | None:
+        """Busca O(1) do índice de um objeto pelo nome exato."""
+        return self._obj_to_id.get(name)
+
+    def _find_object_ids_containing(self, substring: str) -> set[int]:
+        """Busca O(N) única para objetos que contenham a substring."""
+        return {idx for name, idx in self._obj_to_id.items() if substring in name}
+
+    def _update_car_to_pri(
+        self,
+        actor: dict,
+        car_to_pri: dict[int, int],
+        obj_player_ri_id: int | None,
+    ) -> bool:
+        """Atualiza car_to_pri se o actor for uma atualização de PlayerReplicationInfo."""
+        if obj_player_ri_id is not None and actor.get("object_id") == obj_player_ri_id:
+            aid = actor.get("actor_id")
+            attr = actor.get("attribute", {})
+            if isinstance(attr, dict):
+                act = attr.get("ActiveActor", {})
+                target = act.get("actor", -1)
+                if target >= 0 and target in self._pri_info:
+                    car_to_pri[aid] = target
+                elif target < 0:
+                    car_to_pri.pop(aid, None)
+                return True
+        return False
 
     # ──────────────────────────────────────────────
     #  Etapa 1: Mapear Actors
@@ -56,22 +85,14 @@ class ReplayAnalyzer:
             - Trata re-criação de carros em demolições/respawn
         """
         # Passo 1: Identificar o object_id para RigidBody
-        for idx, obj_name in enumerate(self.objects):
-            if obj_name in self._RIGIDBODY_NAMES:
-                self._rigidbody_object_ids.add(idx)
+        self._rigidbody_object_ids = {
+            self._obj_to_id[name] for name in self._RIGIDBODY_NAMES if name in self._obj_to_id
+        }
 
-        # Identificar object_ids importantes
-        obj_player_name_id = None
-        obj_vehicle_link_id = None
-        obj_player_ri_id = None
-
-        for idx, obj_name in enumerate(self.objects):
-            if obj_name == "Engine.PlayerReplicationInfo:PlayerName":
-                obj_player_name_id = idx
-            elif obj_name == "TAGame.CarComponent_TA:Vehicle":
-                obj_vehicle_link_id = idx
-            elif obj_name == "Engine.Pawn:PlayerReplicationInfo":
-                obj_player_ri_id = idx
+        # Identificar object_ids importantes (lookup O(1))
+        obj_player_name_id = self._get_object_id("Engine.PlayerReplicationInfo:PlayerName")
+        obj_vehicle_link_id = self._get_object_id("TAGame.CarComponent_TA:Vehicle")
+        obj_player_ri_id = self._get_object_id("Engine.Pawn:PlayerReplicationInfo")
 
         # Passo 2: Percorrer frames para construir registros
         # PRIs: actor_id -> {name, team}
@@ -187,11 +208,7 @@ class ReplayAnalyzer:
                 frame, time, entity, team, x, y, z, vx, vy, vz
             Onde entity = nome do jogador ou "ball".
         """
-        obj_player_ri_id = None
-        for idx, obj_name in enumerate(self.objects):
-            if obj_name == "Engine.Pawn:PlayerReplicationInfo":
-                obj_player_ri_id = idx
-                break
+        obj_player_ri_id = self._get_object_id("Engine.Pawn:PlayerReplicationInfo")
 
         # Rastreamento dinâmico frame-a-frame
         car_to_pri: dict[int, int] = {}
@@ -219,17 +236,7 @@ class ReplayAnalyzer:
 
             # 3. Atualizar links Car -> PRI
             for actor in frame.get("updated_actors", []):
-                aid = actor.get("actor_id")
-                oid = actor.get("object_id")
-                if oid == obj_player_ri_id:
-                    attr = actor.get("attribute", {})
-                    if isinstance(attr, dict):
-                        act = attr.get("ActiveActor", {})
-                        target = act.get("actor", -1)
-                        if target >= 0 and target in self._pri_info:
-                            car_to_pri[aid] = target
-                        elif target < 0:
-                            car_to_pri.pop(aid, None)
+                self._update_car_to_pri(actor, car_to_pri, obj_player_ri_id)
 
             # 4. Atualizar física (RigidBody)
             for actor in frame.get("updated_actors", []):
@@ -318,18 +325,9 @@ class ReplayAnalyzer:
             DataFrame com colunas:
                 frame, time, player_name, team, boost_pct (0-100)
         """
-        # Identificar os object_ids relevantes
-        obj_boost_id = None
-        obj_vehicle_link_id = None
-        obj_player_ri_id = None
-
-        for idx, obj_name in enumerate(self.objects):
-            if obj_name == "TAGame.CarComponent_Boost_TA:ReplicatedBoost":
-                obj_boost_id = idx
-            elif obj_name == "TAGame.CarComponent_TA:Vehicle":
-                obj_vehicle_link_id = idx
-            elif obj_name == "Engine.Pawn:PlayerReplicationInfo":
-                obj_player_ri_id = idx
+        obj_boost_id = self._get_object_id("TAGame.CarComponent_Boost_TA:ReplicatedBoost")
+        obj_vehicle_link_id = self._get_object_id("TAGame.CarComponent_TA:Vehicle")
+        obj_player_ri_id = self._get_object_id("Engine.Pawn:PlayerReplicationInfo")
 
         if obj_boost_id is None:
             return pd.DataFrame()
@@ -360,12 +358,8 @@ class ReplayAnalyzer:
                 if oid == obj_vehicle_link_id:
                     component_to_car[aid] = attr.get("ActiveActor", {}).get("actor", -1)
 
-                elif oid == obj_player_ri_id:
-                    target = attr.get("ActiveActor", {}).get("actor", -1)
-                    if target >= 0 and target in self._pri_info:
-                        car_to_pri[aid] = target
-                    elif target < 0:
-                        car_to_pri.pop(aid, None)
+                elif self._update_car_to_pri(actor, car_to_pri, obj_player_ri_id):
+                    pass
 
                 elif oid == obj_boost_id:
                     car_id = component_to_car.get(aid)
@@ -459,10 +453,7 @@ class ReplayAnalyzer:
 
         Procura por atualizações com ReplicatedDemolish/ReplicatedDemolishExtended.
         """
-        demolish_oids: set[int] = set()
-        for idx, obj_name in enumerate(self.objects):
-            if "ReplicatedDemolish" in obj_name:
-                demolish_oids.add(idx)
+        demolish_oids = self._find_object_ids_containing("ReplicatedDemolish")
 
         if not demolish_oids:
             return []

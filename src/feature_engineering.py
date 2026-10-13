@@ -64,145 +64,85 @@ def extract_team_features(
     if len(team_players) < 2:
         return {}
 
-    # ── Feature 1: avg_dist_to_ball ──
-    # Para cada frame amostrado, calcular distancia media dos jogadores a bola
+    # ── Extração de features em passada única por frame ──
     frames_sampled = sorted(team_pos["frame"].unique())
-    frame_dists_to_ball = []
 
-    for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        frame_ball = ball_pos[ball_pos["frame"] == frame_idx]
+    # Mapa O(1) de posição da bola por frame
+    ball_map: dict[int, tuple[float, float]] = {
+        int(r["frame"]): (float(r["x"]), float(r["y"]))
+        for _, r in ball_pos[["frame", "x", "y"]].iterrows()
+    }
 
-        if frame_ball.empty:
-            continue
+    team_grouped = team_pos.groupby("frame")
 
-        bx = frame_ball.iloc[0]["x"]
-        by = frame_ball.iloc[0]["y"]
-
-        dists = []
-        for _, row in frame_team.iterrows():
-            d = compute_distance((row["x"], row["y"]), (bx, by))
-            dists.append(d)
-
-        if dists:
-            frame_dists_to_ball.append(np.mean(dists))
-
-    avg_dist_to_ball = float(np.mean(frame_dists_to_ball)) if frame_dists_to_ball else 0.0
-
-    # ── Feature 2: min_player_dist_to_ball ──
-    # Distancia media do jogador MAIS PROXIMO da bola em cada frame
-    min_dists = []
-    for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        frame_ball = ball_pos[ball_pos["frame"] == frame_idx]
-        if frame_ball.empty:
-            continue
-
-        bx = frame_ball.iloc[0]["x"]
-        by = frame_ball.iloc[0]["y"]
-
-        dists = []
-        for _, row in frame_team.iterrows():
-            d = compute_distance((row["x"], row["y"]), (bx, by))
-            dists.append(d)
-
-        if dists:
-            min_dists.append(min(dists))
-
-    min_player_dist_to_ball = float(np.mean(min_dists)) if min_dists else 0.0
-
-    # ── Features 3-4: team_spread (mean e std) ──
-    # Dispersao = distancia media entre todos os pares de jogadores
-    spreads = []
-    for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        players_in_frame = []
-        for _, row in frame_team.iterrows():
-            players_in_frame.append((row["x"], row["y"]))
-
-        if len(players_in_frame) >= 2:
-            pair_dists = []
-            for i in range(len(players_in_frame)):
-                for j in range(i + 1, len(players_in_frame)):
-                    pair_dists.append(
-                        compute_distance(players_in_frame[i], players_in_frame[j])
-                    )
-            spreads.append(np.mean(pair_dists))
-
-    team_spread_mean = float(np.mean(spreads)) if spreads else 0.0
-    team_spread_std = _safe_std(np.array(spreads))
-
-    # ── Features 5-6: triangle_area (mean e std) ──
-    # Area do triangulo formado pelos 3 jogadores (ou convex hull para != 3)
-    triangle_areas = []
-    for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        players_in_frame = []
-        for _, row in frame_team.iterrows():
-            players_in_frame.append((row["x"], row["y"]))
-
-        if len(players_in_frame) >= 3:
-            # Usar os primeiros 3 (ou calcular hull se mais)
-            area = compute_triangle_area(
-                players_in_frame[0], players_in_frame[1], players_in_frame[2]
-            )
-            triangle_areas.append(area)
-
-    triangle_area_mean = float(np.mean(triangle_areas)) if triangle_areas else 0.0
-    triangle_area_std = _safe_std(np.array(triangle_areas))
-
-    # ── Feature 7: defensive_coverage_pct ──
-    # % de frames com pelo menos 1 jogador na metade defensiva
-    # Team 0 (azul) defende y < 0, Team 1 (laranja) defende y > 0
+    frame_dists_to_ball: list[float] = []
+    min_dists: list[float] = []
+    spreads: list[float] = []
+    triangle_areas: list[float] = []
     defensive_frames = 0
     total_frames = 0
-
-    for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        if frame_team.empty:
-            continue
-        total_frames += 1
-
-        has_defender = False
-        for _, row in frame_team.iterrows():
-            if team == 0 and row["y"] < 0:  # Azul defende em y negativo
-                has_defender = True
-                break
-            elif team == 1 and row["y"] > 0:  # Laranja defende em y positivo
-                has_defender = True
-                break
-
-        if has_defender:
-            defensive_frames += 1
-
-    defensive_coverage_pct = (
-        (defensive_frames / total_frames * 100.0) if total_frames > 0 else 0.0
-    )
-
-    # ── Feature 8: ball_chase_ratio ──
-    # % de frames com 2+ jogadores a menos de BALL_CHASE_DIST da bola
     chase_frames = 0
     chase_total = 0
 
     for frame_idx in frames_sampled:
-        frame_team = team_pos[team_pos["frame"] == frame_idx]
-        frame_ball = ball_pos[ball_pos["frame"] == frame_idx]
-        if frame_ball.empty:
+        if frame_idx not in team_grouped.groups:
             continue
-        chase_total += 1
+        group = team_grouped.get_group(frame_idx)
+        if group.empty:
+            continue
 
-        bx = frame_ball.iloc[0]["x"]
-        by = frame_ball.iloc[0]["y"]
+        coords = list(zip(group["x"].values, group["y"].values))
+        n_players = len(coords)
 
-        close_count = 0
-        for _, row in frame_team.iterrows():
-            d = compute_distance((row["x"], row["y"]), (bx, by))
-            if d < BALL_CHASE_DIST:
-                close_count += 1
+        # 1. Distâncias à bola e Ball chasing
+        ball_coord = ball_map.get(frame_idx)
+        if ball_coord is not None:
+            bx, by = ball_coord
+            dists = [compute_distance(p, (bx, by)) for p in coords]
+            if dists:
+                frame_dists_to_ball.append(float(np.mean(dists)))
+                min_dists.append(float(min(dists)))
 
-        if close_count >= 2:
-            chase_frames += 1
+            chase_total += 1
+            close_count = sum(1 for d in dists if d < BALL_CHASE_DIST)
+            if close_count >= 2:
+                chase_frames += 1
 
+        # 2. Team spread (dispersão média dos pares)
+        if n_players >= 2:
+            pair_dists = [
+                compute_distance(coords[i], coords[j])
+                for i in range(n_players)
+                for j in range(i + 1, n_players)
+            ]
+            spreads.append(float(np.mean(pair_dists)))
+
+        # 3. Área do triângulo (3 jogadores)
+        if n_players >= 3:
+            area = compute_triangle_area(coords[0], coords[1], coords[2])
+            triangle_areas.append(area)
+
+        # 4. Cobertura defensiva
+        total_frames += 1
+        y_vals = group["y"].values
+        if team == 0:
+            has_defender = bool(np.any(y_vals < 0))
+        else:
+            has_defender = bool(np.any(y_vals > 0))
+
+        if has_defender:
+            defensive_frames += 1
+
+    # Agregações
+    avg_dist_to_ball = float(np.mean(frame_dists_to_ball)) if frame_dists_to_ball else 0.0
+    min_player_dist_to_ball = float(np.mean(min_dists)) if min_dists else 0.0
+    team_spread_mean = float(np.mean(spreads)) if spreads else 0.0
+    team_spread_std = _safe_std(np.array(spreads))
+    triangle_area_mean = float(np.mean(triangle_areas)) if triangle_areas else 0.0
+    triangle_area_std = _safe_std(np.array(triangle_areas))
+    defensive_coverage_pct = (
+        (defensive_frames / total_frames * 100.0) if total_frames > 0 else 0.0
+    )
     ball_chase_ratio = (chase_frames / chase_total * 100.0) if chase_total > 0 else 0.0
 
     # ── Feature 9: avg_boost_pct ──
@@ -210,15 +150,14 @@ def extract_team_features(
         team_boost = boost_df[boost_df["team"] == team]
         avg_boost_pct = float(team_boost["boost_pct"].mean()) if not team_boost.empty else 50.0
     else:
-        avg_boost_pct = 50.0  # Valor neutro se nao temos dados de boost
+        avg_boost_pct = 50.0
 
-    # ── Feature 10: avg_speed ──
-    speeds = []
-    for _, row in team_pos.iterrows():
-        s = _speed_from_velocity(row.get("vx", 0), row.get("vy", 0), row.get("vz", 0))
-        speeds.append(s)
-
-    avg_speed = float(np.mean(speeds)) if speeds else 0.0
+    # ── Feature 10: avg_speed (vetorizado) ──
+    vx = team_pos["vx"].fillna(0).to_numpy()
+    vy = team_pos["vy"].fillna(0).to_numpy()
+    vz = team_pos["vz"].fillna(0).to_numpy()
+    speeds = np.sqrt(vx * vx + vy * vy + vz * vz)
+    avg_speed = float(np.mean(speeds)) if len(speeds) > 0 else 0.0
 
     return {
         "avg_dist_to_ball": round(avg_dist_to_ball, 1),
