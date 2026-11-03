@@ -17,7 +17,7 @@ RAW_DIR = Path(os.getenv("RAW_DIR", str(DATA_DIR / "raw")))
 PROCESSED_DIR = Path(os.getenv("PROCESSED_DIR", str(DATA_DIR / "processed")))
 PARQUET_DIR = Path(os.getenv("PARQUET_DIR", str(DATA_DIR / "parquet")))
 
-_default_csv = PROCESSED_DIR / "features_dataset.csv"
+_default_csv = PROJECT_ROOT / "data" / "processed" / "features_dataset.csv"
 DATASET_CSV_PATH = Path(
     os.getenv("REFERENCE_CSV_PATH", os.getenv("DATASET_CSV_PATH", str(_default_csv)))
 )

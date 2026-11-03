@@ -14,6 +14,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY pyproject.toml README.md ./
 COPY rl_analytics/ ./rl_analytics/
+COPY rl_analytics_api/ ./rl_analytics_api/
 COPY scripts/ ./scripts/
 
 RUN pip install --upgrade pip setuptools wheel && \
@@ -45,9 +46,10 @@ RUN cd /tmp/rrrocket_meta && \
     rm -rf /tmp/rrrocket_meta && \
     /usr/local/bin/rrrocket --help >/dev/null
 
-# 2. Copiar venv do builder e código de domínio + artefatos v2
+# 2. Copiar venv do builder e código de domínio + API + artefatos v2
 COPY --from=builder /opt/venv /opt/venv
 COPY rl_analytics/ ./rl_analytics/
+COPY rl_analytics_api/ ./rl_analytics_api/
 COPY scripts/ ./scripts/
 COPY artifacts/models/model_detector.v2.joblib ./artifacts/models/model_detector.v2.joblib
 COPY data/processed/features_dataset.csv ./data/processed/features_dataset.csv

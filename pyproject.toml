@@ -55,13 +55,14 @@ dev = [
 
 [project.scripts]
 rl-analyze = "rl_analytics.facade:main"
+rl-seed-catalog = "rl_analytics_api.seed:main"
 rl-build-dataset = "scripts.build_dataset:main"
 rl-train = "scripts.train_models:main"
 rl-export-figures = "scripts.export_figures:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["rl_analytics*", "scripts*"]
+include = ["rl_analytics*", "rl_analytics_api*", "scripts*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

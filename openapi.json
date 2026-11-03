@@ -1,0 +1,1820 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RL Analytics TCC API",
+    "description": "Motor de análise de telemetria binária, inferência Random Forest e diagnóstico tático XAI (Z-Score × MDI) integrado ao ecossistema Datafield.",
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/api/analytics/v1/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Live",
+        "operationId": "health_live_api_analytics_v1_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Ready",
+        "operationId": "health_ready_api_analytics_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/model": {
+      "get": {
+        "tags": [
+          "model"
+        ],
+        "summary": "Get Model Info",
+        "operationId": "get_model_info_api_analytics_v1_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInfoResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays": {
+      "post": {
+        "tags": [
+          "replays"
+        ],
+        "summary": "Upload Replay",
+        "operationId": "upload_replay_api_analytics_v1_replays_post",
+        "parameters": [
+          {
+            "name": "Prefer",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Prefer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_replay_api_analytics_v1_replays_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "replays"
+        ],
+        "summary": "List Replays",
+        "operationId": "list_replays_api_analytics_v1_replays_get",
+        "parameters": [
+          {
+            "name": "label",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrar por catalog_label (higher, lower)",
+              "title": "Label"
+            },
+            "description": "Filtrar por catalog_label (higher, lower)"
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrar por origem (catalog, upload)",
+              "title": "Source"
+            },
+            "description": "Filtrar por origem (catalog, upload)"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Offset/cursor de paginação",
+              "default": 0,
+              "title": "Cursor"
+            },
+            "description": "Offset/cursor de paginação"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "description": "Quantidade máxima de itens",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Quantidade máxima de itens"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayCatalogResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Get Job Status",
+        "operationId": "get_job_status_api_analytics_v1_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays/{replay_id}": {
+      "get": {
+        "tags": [
+          "replays"
+        ],
+        "summary": "Get Replay Metadata",
+        "operationId": "get_replay_metadata_api_analytics_v1_replays__replay_id__get",
+        "parameters": [
+          {
+            "name": "replay_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Replay Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayMetadataResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays/{replay_id}/diagnosis": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Replay Diagnosis",
+        "operationId": "get_replay_diagnosis_api_analytics_v1_replays__replay_id__diagnosis_get",
+        "parameters": [
+          {
+            "name": "replay_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Replay Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays/{replay_id}/heatmap": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Replay Heatmap",
+        "operationId": "get_replay_heatmap_api_analytics_v1_replays__replay_id__heatmap_get",
+        "parameters": [
+          {
+            "name": "replay_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Replay Id"
+            }
+          },
+          {
+            "name": "team",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "0",
+                "1",
+                "both"
+              ],
+              "type": "string",
+              "default": "both",
+              "title": "Team"
+            }
+          },
+          {
+            "name": "bins",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Resolução da grade Nx x Ny (máx 64x80)",
+              "default": "24x32",
+              "title": "Bins"
+            },
+            "description": "Resolução da grade Nx x Ny (máx 64x80)"
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "team",
+                "ball"
+              ],
+              "type": "string",
+              "default": "team",
+              "title": "Entity"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "cells",
+                "grid"
+              ],
+              "type": "string",
+              "default": "cells",
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HeatmapCellsResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HeatmapGridResponse"
+                    }
+                  ],
+                  "title": "Response Get Replay Heatmap Api Analytics V1 Replays  Replay Id  Heatmap Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays/{replay_id}/radar": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Replay Radar",
+        "operationId": "get_replay_radar_api_analytics_v1_replays__replay_id__radar_get",
+        "parameters": [
+          {
+            "name": "replay_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Replay Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RadarResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/v1/replays/{replay_id}/report": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Replay Report",
+        "operationId": "get_replay_report_api_analytics_v1_replays__replay_id__report_get",
+        "parameters": [
+          {
+            "name": "replay_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Replay Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplayReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_upload_replay_api_analytics_v1_replays_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Arquivo binário .replay de Rocket League 3v3"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_replay_api_analytics_v1_replays_post"
+      },
+      "DiagnosisResponse": {
+        "properties": {
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelVersionInfo"
+          },
+          "is_training_sample": {
+            "type": "boolean",
+            "title": "Is Training Sample"
+          },
+          "teams": {
+            "items": {
+              "$ref": "#/components/schemas/TeamDiagnosis"
+            },
+            "type": "array",
+            "title": "Teams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replay_id",
+          "model",
+          "is_training_sample",
+          "teams"
+        ],
+        "title": "DiagnosisResponse"
+      },
+      "FindingItem": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "title": "Feature"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "ref_mean": {
+            "type": "number",
+            "title": "Ref Mean"
+          },
+          "ref_std": {
+            "type": "number",
+            "title": "Ref Std"
+          },
+          "z": {
+            "type": "number",
+            "title": "Z"
+          },
+          "mdi": {
+            "type": "number",
+            "title": "Mdi"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "above",
+              "below",
+              "any"
+            ],
+            "title": "Direction"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "good",
+              "neutral",
+              "bad"
+            ],
+            "title": "Tier"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "alta",
+              "media",
+              "baixa",
+              "ok"
+            ],
+            "title": "Severity"
+          },
+          "partial_score": {
+            "type": "number",
+            "title": "Partial Score"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature",
+          "label",
+          "value",
+          "ref_mean",
+          "ref_std",
+          "z",
+          "mdi",
+          "direction",
+          "tier",
+          "severity",
+          "partial_score",
+          "weight",
+          "text"
+        ],
+        "title": "FindingItem"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status"
+          },
+          "model_loaded": {
+            "type": "boolean",
+            "title": "Model Loaded"
+          },
+          "database": {
+            "type": "string",
+            "title": "Database"
+          },
+          "redis": {
+            "type": "string",
+            "title": "Redis"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "model_loaded",
+          "database",
+          "redis"
+        ],
+        "title": "HealthResponse"
+      },
+      "HeatmapCell": {
+        "properties": {
+          "ix": {
+            "type": "integer",
+            "title": "Ix"
+          },
+          "iy": {
+            "type": "integer",
+            "title": "Iy"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "team_0": {
+            "type": "integer",
+            "title": "Team 0"
+          },
+          "team_1": {
+            "type": "integer",
+            "title": "Team 1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ix",
+          "iy",
+          "x",
+          "y",
+          "team_0",
+          "team_1"
+        ],
+        "title": "HeatmapCell"
+      },
+      "HeatmapCellsResponse": {
+        "properties": {
+          "grid": {
+            "$ref": "#/components/schemas/HeatmapGridMeta"
+          },
+          "entity": {
+            "type": "string",
+            "enum": [
+              "team",
+              "ball"
+            ],
+            "title": "Entity"
+          },
+          "totals": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Totals"
+          },
+          "max": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Max"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/HeatmapCell"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "grid",
+          "entity",
+          "totals",
+          "max",
+          "cells"
+        ],
+        "title": "HeatmapCellsResponse"
+      },
+      "HeatmapGridMeta": {
+        "properties": {
+          "nx": {
+            "type": "integer",
+            "title": "Nx"
+          },
+          "ny": {
+            "type": "integer",
+            "title": "Ny"
+          },
+          "x_range": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "X Range"
+          },
+          "y_range": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Y Range"
+          },
+          "cell_w": {
+            "type": "number",
+            "title": "Cell W"
+          },
+          "cell_h": {
+            "type": "number",
+            "title": "Cell H"
+          },
+          "sample_interval_s": {
+            "type": "number",
+            "title": "Sample Interval S",
+            "default": 1.0
+          },
+          "layout": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Layout"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nx",
+          "ny",
+          "x_range",
+          "y_range",
+          "cell_w",
+          "cell_h"
+        ],
+        "title": "HeatmapGridMeta"
+      },
+      "HeatmapGridResponse": {
+        "properties": {
+          "grid": {
+            "$ref": "#/components/schemas/HeatmapGridMeta"
+          },
+          "entity": {
+            "type": "string",
+            "enum": [
+              "team",
+              "ball"
+            ],
+            "title": "Entity"
+          },
+          "teams": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/HeatmapTeamGrid"
+            },
+            "type": "object",
+            "title": "Teams"
+          }
+        },
+        "type": "object",
+        "required": [
+          "grid",
+          "entity",
+          "teams"
+        ],
+        "title": "HeatmapGridResponse"
+      },
+      "HeatmapTeamGrid": {
+        "properties": {
+          "samples": {
+            "type": "integer",
+            "title": "Samples"
+          },
+          "max": {
+            "type": "integer",
+            "title": "Max"
+          },
+          "counts": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Counts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "samples",
+          "max",
+          "counts"
+        ],
+        "title": "HeatmapTeamGrid"
+      },
+      "JobErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "JobErrorDetail"
+      },
+      "JobInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Identificador único do job de processamento"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status",
+            "description": "Estado atual na máquina de estados do job"
+          },
+          "poll_url": {
+            "type": "string",
+            "title": "Poll Url",
+            "description": "URL relativa para consultar o status do job"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "poll_url"
+        ],
+        "title": "JobInfo"
+      },
+      "JobStatusResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage",
+            "description": "Etapa interna (queued, parsing, extracting, persisting_parquet, inferring, persisting_report, done, failed)"
+          },
+          "progress": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "description": "Progresso estimado de 0.0 a 1.0"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobErrorDetail"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "replay_id",
+          "status",
+          "stage",
+          "progress"
+        ],
+        "title": "JobStatusResponse"
+      },
+      "ModelInfoResponse": {
+        "properties": {
+          "model": {
+            "$ref": "#/components/schemas/ModelVersionInfo"
+          },
+          "feature_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Feature Names"
+          },
+          "feature_importances": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Feature Importances"
+          },
+          "reference_mean": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Reference Mean"
+          },
+          "reference_std": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Reference Std"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "feature_names",
+          "feature_importances",
+          "reference_mean",
+          "reference_std",
+          "provenance"
+        ],
+        "title": "ModelInfoResponse"
+      },
+      "ModelVersionInfo": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "sklearn": {
+            "type": "string",
+            "title": "Sklearn"
+          },
+          "pipeline": {
+            "type": "string",
+            "title": "Pipeline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "sklearn",
+          "pipeline"
+        ],
+        "title": "ModelVersionInfo"
+      },
+      "PlayerStatItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "team": {
+            "type": "integer",
+            "title": "Team"
+          },
+          "score": {
+            "type": "integer",
+            "title": "Score",
+            "default": 0
+          },
+          "goals": {
+            "type": "integer",
+            "title": "Goals",
+            "default": 0
+          },
+          "assists": {
+            "type": "integer",
+            "title": "Assists",
+            "default": 0
+          },
+          "saves": {
+            "type": "integer",
+            "title": "Saves",
+            "default": 0
+          },
+          "shots": {
+            "type": "integer",
+            "title": "Shots",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "team"
+        ],
+        "title": "PlayerStatItem"
+      },
+      "PredictionInfo": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "proba": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Proba"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "proba"
+        ],
+        "title": "PredictionInfo"
+      },
+      "RadarDataPoint": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "title": "Feature"
+          },
+          "axis": {
+            "type": "string",
+            "title": "Axis"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "above",
+              "below",
+              "any"
+            ],
+            "title": "Direction"
+          },
+          "team_0": {
+            "type": "number",
+            "title": "Team 0"
+          },
+          "team_1": {
+            "type": "number",
+            "title": "Team 1"
+          },
+          "ref_higher": {
+            "type": "number",
+            "title": "Ref Higher"
+          },
+          "ref_lower": {
+            "type": "number",
+            "title": "Ref Lower"
+          },
+          "raw_team_0": {
+            "type": "number",
+            "title": "Raw Team 0"
+          },
+          "raw_team_1": {
+            "type": "number",
+            "title": "Raw Team 1"
+          },
+          "raw_ref_higher": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Ref Higher"
+          },
+          "raw_ref_lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Ref Lower"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature",
+          "axis",
+          "direction",
+          "team_0",
+          "team_1",
+          "ref_higher",
+          "ref_lower",
+          "raw_team_0",
+          "raw_team_1"
+        ],
+        "title": "RadarDataPoint"
+      },
+      "RadarResponse": {
+        "properties": {
+          "scale": {
+            "$ref": "#/components/schemas/RadarScaleInfo"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/RadarSeriesItem"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RadarDataPoint"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scale",
+          "series",
+          "data"
+        ],
+        "title": "RadarResponse"
+      },
+      "RadarScaleInfo": {
+        "properties": {
+          "min": {
+            "type": "number",
+            "title": "Min",
+            "default": 0.0
+          },
+          "max": {
+            "type": "number",
+            "title": "Max",
+            "default": 100.0
+          },
+          "meaning": {
+            "type": "string",
+            "title": "Meaning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meaning"
+        ],
+        "title": "RadarScaleInfo"
+      },
+      "RadarSeriesItem": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "color": {
+            "type": "string",
+            "title": "Color"
+          },
+          "dashed": {
+            "type": "boolean",
+            "title": "Dashed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "color"
+        ],
+        "title": "RadarSeriesItem"
+      },
+      "ReplayCatalogItem": {
+        "properties": {
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id"
+          },
+          "replay_name": {
+            "type": "string",
+            "title": "Replay Name"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "catalog"
+            ],
+            "title": "Source"
+          },
+          "catalog_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog Label"
+          },
+          "is_training_sample": {
+            "type": "boolean",
+            "title": "Is Training Sample",
+            "default": false
+          },
+          "map_name": {
+            "type": "string",
+            "title": "Map Name",
+            "default": "unknown"
+          },
+          "team_0_score": {
+            "type": "integer",
+            "title": "Team 0 Score",
+            "default": 0
+          },
+          "team_1_score": {
+            "type": "integer",
+            "title": "Team 1 Score",
+            "default": 0
+          },
+          "total_seconds": {
+            "type": "number",
+            "title": "Total Seconds",
+            "default": 0.0
+          },
+          "team_0_tactical_score": {
+            "type": "number",
+            "title": "Team 0 Tactical Score",
+            "default": 0.0
+          },
+          "team_1_tactical_score": {
+            "type": "number",
+            "title": "Team 1 Tactical Score",
+            "default": 0.0
+          },
+          "team_0_pred": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Team 0 Pred"
+          },
+          "team_1_pred": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Team 1 Pred"
+          },
+          "has_spatial_telemetry": {
+            "type": "boolean",
+            "title": "Has Spatial Telemetry",
+            "default": true
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replay_id",
+          "replay_name",
+          "source"
+        ],
+        "title": "ReplayCatalogItem"
+      },
+      "ReplayCatalogResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReplayCatalogItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total"
+        ],
+        "title": "ReplayCatalogResponse"
+      },
+      "ReplayMetadataResponse": {
+        "properties": {
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id"
+          },
+          "replay_name": {
+            "type": "string",
+            "title": "Replay Name"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "catalog"
+            ],
+            "title": "Source"
+          },
+          "catalog_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog Label"
+          },
+          "is_training_sample": {
+            "type": "boolean",
+            "title": "Is Training Sample",
+            "default": false
+          },
+          "map_name": {
+            "type": "string",
+            "title": "Map Name",
+            "default": "unknown"
+          },
+          "team_size": {
+            "type": "integer",
+            "title": "Team Size",
+            "default": 3
+          },
+          "team_0_score": {
+            "type": "integer",
+            "title": "Team 0 Score",
+            "default": 0
+          },
+          "team_1_score": {
+            "type": "integer",
+            "title": "Team 1 Score",
+            "default": 0
+          },
+          "num_frames": {
+            "type": "integer",
+            "title": "Num Frames",
+            "default": 0
+          },
+          "total_seconds": {
+            "type": "number",
+            "title": "Total Seconds",
+            "default": 0.0
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "player_stats": {
+            "items": {
+              "$ref": "#/components/schemas/PlayerStatItem"
+            },
+            "type": "array",
+            "title": "Player Stats"
+          },
+          "has_spatial_telemetry": {
+            "type": "boolean",
+            "title": "Has Spatial Telemetry",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "replay_id",
+          "replay_name",
+          "source"
+        ],
+        "title": "ReplayMetadataResponse"
+      },
+      "ReplayReportResponse": {
+        "properties": {
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id"
+          },
+          "replay_name": {
+            "type": "string",
+            "title": "Replay Name"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ReplayMetadataResponse"
+          },
+          "diagnosis": {
+            "$ref": "#/components/schemas/DiagnosisResponse"
+          },
+          "heatmap": {
+            "$ref": "#/components/schemas/HeatmapCellsResponse"
+          },
+          "radar": {
+            "$ref": "#/components/schemas/RadarResponse"
+          },
+          "goals": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Goals"
+          },
+          "demolitions": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Demolitions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replay_id",
+          "replay_name",
+          "metadata",
+          "diagnosis",
+          "heatmap",
+          "radar"
+        ],
+        "title": "ReplayReportResponse"
+      },
+      "ReplayUploadResponse": {
+        "properties": {
+          "replay_id": {
+            "type": "string",
+            "title": "Replay Id",
+            "description": "SHA-256 do conteúdo do arquivo .replay"
+          },
+          "deduplicated": {
+            "type": "boolean",
+            "title": "Deduplicated",
+            "description": "True se o replay já estava analisado na versão atual do modelo"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobInfo"
+          },
+          "report_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Url",
+            "description": "Preenchido quando deduplicated=True ou concluído via Prefer: wait"
+          }
+        },
+        "type": "object",
+        "required": [
+          "replay_id",
+          "deduplicated",
+          "job"
+        ],
+        "title": "ReplayUploadResponse"
+      },
+      "StagnationAlertItem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "stagnation",
+              "immobility"
+            ],
+            "title": "Type"
+          },
+          "player": {
+            "type": "string",
+            "title": "Player"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "pct_time": {
+            "type": "number",
+            "title": "Pct Time"
+          },
+          "seconds": {
+            "type": "integer",
+            "title": "Seconds"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "player",
+          "x",
+          "y",
+          "pct_time",
+          "seconds",
+          "text"
+        ],
+        "title": "StagnationAlertItem"
+      },
+      "TeamDiagnosis": {
+        "properties": {
+          "team": {
+            "type": "integer",
+            "title": "Team"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Score"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "excellent",
+              "good",
+              "average",
+              "poor"
+            ],
+            "title": "Tier"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/PredictionInfo"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/FindingItem"
+            },
+            "type": "array",
+            "title": "Findings"
+          },
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/StagnationAlertItem"
+            },
+            "type": "array",
+            "title": "Alerts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "team",
+          "name",
+          "score",
+          "tier",
+          "prediction",
+          "summary",
+          "findings"
+        ],
+        "title": "TeamDiagnosis"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
