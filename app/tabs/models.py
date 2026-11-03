@@ -14,17 +14,17 @@ from app.services import (
     get_rf_importances_data,
     load_feature_dataset,
 )
-from config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
-from feature_catalog import FEATURE_LABELS, get_feature_label
-from knn_model import RankClassifierTree, TacticalClusterKMeans
-from visualization.interactive import (
+from rl_analytics.config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
+from rl_analytics.feature_catalog import FEATURE_LABELS, get_feature_label
+from rl_analytics.knn_model import RankClassifierTree, TacticalClusterKMeans
+from rl_analytics.visualization.interactive import (
     build_cluster_donut_chart,
     build_confusion_matrices_chart,
     build_elbow_chart,
     build_feature_importances_chart,
     build_pca_clusters_chart,
 )
-from visualization.static import (
+from rl_analytics.visualization.static import (
     figure_to_bytes,
     plot_confusion_matrices_static,
     plot_elbow_static,

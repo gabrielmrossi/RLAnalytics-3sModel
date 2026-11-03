@@ -8,16 +8,19 @@ Contém:
        do modelo Random Forest.
 """
 
+import datetime as dt
 import os
+import platform
 from typing import Any
 
 import joblib
 import numpy as np
 import pandas as pd
+import sklearn
 
-from classifiers import RankClassifierRandomForest
-from config import META_COLS, MODEL_PATH
-from feature_catalog import FEATURE_DESCRIPTIONS, compute_z_score
+from rl_analytics.classifiers import RankClassifierRandomForest
+from rl_analytics.config import META_COLS, MODEL_PATH
+from rl_analytics.feature_catalog import FEATURE_DESCRIPTIONS, compute_z_score
 
 
 def build_reference_profile(
@@ -194,6 +197,7 @@ class ModelDrivenErrorDetector:
         self.reference_std: dict[str, float] = {}
         self.feature_importances: dict[str, float] = {}
         self.feature_names: list[str] = []
+        self.provenance: dict[str, Any] = {}
         self.is_built = False
 
     def build(
@@ -204,40 +208,71 @@ class ModelDrivenErrorDetector:
         feature_names: list[str],
     ) -> dict[str, float]:
         """Treina o RF e constrói perfil de referência."""
-        self.feature_names = feature_names
-        self.rf.train(X, y, feature_names)
+        self.feature_names = list(feature_names)
+        self.rf.train(X, y, self.feature_names)
         self.feature_importances = self.rf.get_feature_importances()
 
-        self.reference_mean, self.reference_std = build_reference_profile(df, feature_names)
+        self.reference_mean, self.reference_std = build_reference_profile(df, self.feature_names)
         if self.reference_mean:
             self.is_built = True
 
+        self.provenance = {
+            "sklearn_version": sklearn.__version__,
+            "numpy_version": np.__version__,
+            "joblib_version": joblib.__version__,
+            "python_version": platform.python_version(),
+            "trained_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        }
         return self.feature_importances
 
     def save(self, path: str = str(MODEL_PATH)) -> None:
-        """Serializa o detector treinado para disco."""
+        """Serializa o detector treinado para disco no formato v2 (estimadores sklearn puros)."""
         os.makedirs(os.path.dirname(path), exist_ok=True)
         state = {
-            "rf_model": self.rf,
+            "format_version": 2,
+            "scaler": self.rf.scaler,
+            "estimator": self.rf.model,
             "reference_mean": self.reference_mean,
             "reference_std": self.reference_std,
             "feature_importances": self.feature_importances,
             "feature_names": self.feature_names,
             "is_built": self.is_built,
+            "provenance": self.provenance
+            or {
+                "sklearn_version": sklearn.__version__,
+                "numpy_version": np.__version__,
+                "joblib_version": joblib.__version__,
+                "python_version": platform.python_version(),
+                "saved_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+            },
         }
         joblib.dump(state, path)
 
     @classmethod
     def load(cls, path: str = str(MODEL_PATH)) -> "ModelDrivenErrorDetector":
-        """Carrega um detector previamente treinado do disco."""
+        """Carrega um detector previamente treinado do disco (formato v2)."""
         state = joblib.load(path)
+        if state.get("format_version") != 2 or "estimator" not in state or "scaler" not in state:
+            raise ValueError(
+                f"Formato de modelo incompatível em '{path}'. Esperado format_version=2 (sklearn puro)."
+            )
         detector = cls.__new__(cls)
-        detector.rf = state["rf_model"]
-        detector.reference_mean = state["reference_mean"]
-        detector.reference_std = state["reference_std"]
-        detector.feature_importances = state["feature_importances"]
-        detector.feature_names = state["feature_names"]
-        detector.is_built = state["is_built"]
+        rf_wrapper = RankClassifierRandomForest.__new__(RankClassifierRandomForest)
+        rf_wrapper.scaler = state["scaler"]
+        rf_wrapper._model = state["estimator"]
+        rf_wrapper.feature_names = list(state["feature_names"])
+        rf_wrapper.is_trained = bool(state["is_built"])
+        rf_wrapper.n_estimators = getattr(state["estimator"], "n_estimators", 100)
+        rf_wrapper.max_depth = getattr(state["estimator"], "max_depth", None)
+        rf_wrapper.random_state = getattr(state["estimator"], "random_state", 42)
+
+        detector.rf = rf_wrapper
+        detector.reference_mean = dict(state["reference_mean"])
+        detector.reference_std = dict(state["reference_std"])
+        detector.feature_importances = dict(state["feature_importances"])
+        detector.feature_names = list(state["feature_names"])
+        detector.provenance = dict(state.get("provenance", {}))
+        detector.is_built = bool(state["is_built"])
         return detector
 
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -245,6 +280,17 @@ class ModelDrivenErrorDetector:
         if not self.rf.is_trained:
             return np.array([])
         return self.rf.predict(X)
+
+    def predict_proba(self, X: np.ndarray) -> list[dict[str, float]]:
+        """Retorna probabilidades por classe para cada amostra em X."""
+        if not self.rf.is_trained:
+            return []
+        probas = self.rf.predict_proba(X)
+        classes = [str(c) for c in self.rf.model.classes_]
+        return [
+            {cls_name: round(float(p), 4) for cls_name, p in zip(classes, row)}
+            for row in probas
+        ]
 
     def detect_errors(
         self, team_features: dict[str, float], z_threshold: float = 1.5

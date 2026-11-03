@@ -12,12 +12,16 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-# Adicionar src ao path para importar módulos existentes
 ROOT_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT_DIR / "src"))
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from analyzer import ReplayAnalyzer
-from knn_model import (
+from rl_analytics.analyzer import ReplayAnalyzer
+from rl_analytics.diagnosis import (
+    check_stagnation_anomaly as _check_stagnation_anomaly,
+    generate_tactical_narrative as _generate_tactical_narrative,
+)
+from rl_analytics.knn_model import (
     ModelBenchmarking,
     ModelDrivenErrorDetector,
     PositioningErrorDetector,
@@ -28,7 +32,6 @@ from knn_model import (
     get_X_y,
     load_dataset,
 )
-from streamlit_app import _check_stagnation_anomaly, _generate_tactical_narrative
 
 
 def round_floats(obj, decimals=6):

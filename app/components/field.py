@@ -4,7 +4,7 @@ field.py — Componente de renderização do campo oficial de Rocket League (2D)
 
 import plotly.graph_objects as go
 
-from config import (
+from rl_analytics.config import (
     FIELD_HALF_LENGTH,
     FIELD_HALF_WIDTH,
     GOAL_DEPTH,

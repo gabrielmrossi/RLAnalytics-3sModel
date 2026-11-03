@@ -6,10 +6,11 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-from config import DATASET_CSV_PATH, MODEL_PATH
-from knn_model import (
+from rl_analytics.config import DATASET_CSV_PATH, MODEL_PATH
+from rl_analytics.knn_model import (
     ModelDrivenErrorDetector,
     RankClassifierKNN,
     RankClassifierRandomForest,

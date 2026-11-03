@@ -7,10 +7,10 @@ import streamlit as st
 
 from app.components.downloads import render_download_button
 from app.services import load_feature_dataset
-from config import META_COLS
-from feature_catalog import get_feature_label
-from visualization.interactive import build_radar_chart
-from visualization.static import figure_to_bytes, plot_radar_static
+from rl_analytics.config import META_COLS
+from rl_analytics.feature_catalog import get_feature_label
+from rl_analytics.visualization.interactive import build_radar_chart
+from rl_analytics.visualization.static import figure_to_bytes, plot_radar_static
 
 
 def tab_higher_vs_lower() -> None:

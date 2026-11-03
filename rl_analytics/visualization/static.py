@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from config import CLUSTER_PALETTE
+from rl_analytics.config import CLUSTER_PALETTE
 
 
 def figure_to_bytes(fig: plt.Figure, fmt: str = "png", dpi: int = 300) -> bytes:

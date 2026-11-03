@@ -1,0 +1,31 @@
+# Git e ambientes locais
+.git/
+.venv/
+venv/
+env/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+.kilo/
+.vscode/
+.idea/
+
+# Dados brutos e JSONs pesados (4.6 GB) — manter apenas features_dataset.csv (25 KB)
+data/*
+!data/processed/
+data/processed/*
+!data/processed/features_dataset.csv
+
+# Exclusões de produção (D6: Streamlit fora da imagem; v1 arquivado fora da imagem; binário Windows fora)
+app/
+bin/*.exe
+artifacts/figures/
+artifacts/models/archive/
+

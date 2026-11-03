@@ -6,14 +6,10 @@ Roteador principal de abas com interface desacoplada e modular.
 import sys
 from pathlib import Path
 
-# Garante acesso a src/ e app/ independentemente de onde o Streamlit for executado
+# Garante acesso à raiz do projeto quando executado via `streamlit run app/main.py`
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SRC_DIR = PROJECT_ROOT / "src"
-APP_DIR = PROJECT_ROOT / "app"
-
-for p in (str(SRC_DIR), str(APP_DIR), str(PROJECT_ROOT)):
-    if p not in sys.path:
-        sys.path.insert(0, p)
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import streamlit as st
 

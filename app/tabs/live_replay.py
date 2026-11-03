@@ -19,7 +19,8 @@ from app.services import (
     get_detector,
     load_feature_dataset,
 )
-from config import (
+from rl_analytics.analyzer import compute_distance, compute_triangle_area
+from rl_analytics.config import (
     BALL_COLOR,
     DARK_BG,
     FIELD_HALF_LENGTH,
@@ -28,8 +29,7 @@ from config import (
     TEAM_FILL_COLORS,
     TEAM_NAMES,
 )
-from analyzer import compute_distance, compute_triangle_area
-from feature_engineering import extract_team_features
+from rl_analytics.feature_engineering import extract_team_features
 
 
 def render_scoreboard(goals: list[dict], current_time: float) -> None:

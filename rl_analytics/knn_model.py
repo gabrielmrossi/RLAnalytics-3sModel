@@ -14,16 +14,16 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from benchmarking import ModelBenchmarking
-from classifiers import (
+from rl_analytics.benchmarking import ModelBenchmarking
+from rl_analytics.classifiers import (
     RankClassifierKNN,
     RankClassifierRandomForest,
     RankClassifierTree,
     loo_evaluate,
 )
-from clustering import TacticalClusterKMeans
-from config import DATASET_CSV_PATH, META_COLS
-from error_detection import (
+from rl_analytics.clustering import TacticalClusterKMeans
+from rl_analytics.config import DATASET_CSV_PATH, META_COLS
+from rl_analytics.error_detection import (
     ModelDrivenErrorDetector,
     PositioningErrorDetector,
     build_reference_profile,

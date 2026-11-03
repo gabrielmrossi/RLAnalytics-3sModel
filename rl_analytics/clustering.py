@@ -2,19 +2,21 @@
 clustering.py — Clusterização tática comportamental não supervisionada (K-Means + PCA).
 """
 
-from typing import Any, Sequence
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Sequence
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import StandardScaler
 
-from config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
-from visualization.interactive import build_elbow_chart, build_pca_clusters_chart
-from visualization.static import plot_elbow_static, plot_pca_clusters_static, save_figure
+from rl_analytics.config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 
 class TacticalClusterKMeans:
@@ -62,6 +64,9 @@ class TacticalClusterKMeans:
         save_path: str | None = None,
     ) -> go.Figure:
         """Calcula inércia para cada k e retorna figura interativa Plotly."""
+        from rl_analytics.visualization.interactive import build_elbow_chart
+        from rl_analytics.visualization.static import plot_elbow_static, save_figure
+
         k_vals, inertias = self.compute_elbow(X, k_range=k_range)
 
         if save_path:
@@ -118,6 +123,9 @@ class TacticalClusterKMeans:
         save_path: str | None = None,
     ) -> go.Figure:
         """Projeta features em 2D via PCA e plota clusters coloridos."""
+        from rl_analytics.visualization.interactive import build_pca_clusters_chart
+        from rl_analytics.visualization.static import plot_pca_clusters_static, save_figure
+
         X_pca, var_explained, loadings = self.compute_pca(X)
 
         if save_path:

@@ -13,9 +13,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from analyzer import ReplayAnalyzer, compute_triangle_area, compute_distance
-from parser import discover_replays, PROCESSED_DIR
-from config import BALL_CHASE_DIST, META_COLS
+from rl_analytics.analyzer import ReplayAnalyzer, compute_distance, compute_triangle_area
+from rl_analytics.config import BALL_CHASE_DIST, META_COLS
+from rl_analytics.parser import PROCESSED_DIR, discover_replays
 
 
 def _safe_std(arr: np.ndarray) -> float:

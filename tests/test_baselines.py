@@ -3,6 +3,7 @@ tests/test_baselines.py — Testes de caracterização da Fase 1.
 Garante que refatorações não alteram nenhum resultado numérico nem lógico.
 """
 
+import gzip
 import hashlib
 import json
 import os
@@ -14,10 +15,16 @@ import numpy as np
 import pandas as pd
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT_DIR / "src"))
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
-from analyzer import ReplayAnalyzer
-from knn_model import (
+from rl_analytics.analyzer import ReplayAnalyzer
+from rl_analytics.config import MODEL_PATH
+from rl_analytics.diagnosis import (
+    check_stagnation_anomaly as _check_stagnation_anomaly,
+    generate_tactical_narrative as _generate_tactical_narrative,
+)
+from rl_analytics.knn_model import (
     ModelBenchmarking,
     ModelDrivenErrorDetector,
     PositioningErrorDetector,
@@ -28,7 +35,7 @@ from knn_model import (
     get_X_y,
     load_dataset,
 )
-from streamlit_app import _check_stagnation_anomaly, _generate_tactical_narrative
+from rl_analytics.parser import parse_single_replay
 
 
 def compute_df_hash(df: pd.DataFrame) -> str:
@@ -131,13 +138,13 @@ class TestBaselines(unittest.TestCase):
     def test_08_model_driven_detector_and_narratives(self):
         b_mded = self.baselines["model_driven_detector"]
         b_narr = self.baselines["tactical_narratives"]
-        model_path = ROOT_DIR / "data" / "processed" / "model_detector.joblib"
+        model_path = Path(MODEL_PATH)
 
-        if model_path.exists():
-            mded = ModelDrivenErrorDetector.load(str(model_path))
-        else:
-            mded = ModelDrivenErrorDetector(n_estimators=100, random_state=42)
-            mded.build(self.df, self.X, self.y, self.feature_names)
+        self.assertTrue(
+            model_path.exists(),
+            f"Artefato do modelo obrigatório ausente em: {model_path}",
+        )
+        mded = ModelDrivenErrorDetector.load(str(model_path))
 
         preds = mded.predict(self.X).tolist()
         self.assertEqual(preds, b_mded["predictions"])
@@ -150,34 +157,53 @@ class TestBaselines(unittest.TestCase):
             counts.append(len(errs))
 
             narrative, score = _generate_tactical_narrative(fdict, mded)
+            self.assertNotIn("<strong>", narrative)
             scores.append(score)
 
         self.assertEqual(counts, b_mded["errors_count"])
         self.assertEqual(scores, b_narr["scores"])
 
+    def _assert_snapshot_matches(self, raw_data: dict, b_snap: dict) -> None:
+        analyzer = ReplayAnalyzer(raw_data)
+        res = analyzer.analyze()
+        pos_df = res["positions"]
+        boost_df = res["boost"]
+
+        self.assertEqual(list(pos_df.shape), b_snap["positions_shape"])
+        if b_snap["positions_hash"]:
+            self.assertEqual(compute_df_hash(pos_df), b_snap["positions_hash"])
+
+        self.assertEqual(list(boost_df.shape), b_snap["boost_shape"])
+        if b_snap["boost_hash"]:
+            self.assertEqual(compute_df_hash(boost_df), b_snap["boost_hash"])
+
+        self.assertEqual(len(res["goals"]), b_snap["goals_count"])
+        self.assertEqual(len(res["demolitions"]), b_snap["demolitions_count"])
+
     def test_09_analyzer_snapshots(self):
         b_snapshots = self.baselines.get("analyzer_snapshots", {})
+        self.assertTrue(b_snapshots, "Nenhum snapshot definido em baselines.json")
+
         for rep, b_snap in b_snapshots.items():
-            json_file = ROOT_DIR / "data" / "processed" / f"{rep}.json"
-            if not json_file.exists():
-                continue
-            with open(json_file, "r", encoding="utf-8") as f:
+            # 09a: Determinismo do ReplayAnalyzer a partir da fixture JSON comprimida
+            gz_file = ROOT_DIR / "tests" / "fixtures" / "snapshots" / f"{rep}.json.gz"
+            self.assertTrue(
+                gz_file.exists(),
+                f"Fixture de snapshot obrigatória ausente: {gz_file}",
+            )
+            with gzip.open(gz_file, "rt", encoding="utf-8") as f:
                 raw_data = json.load(f)
-            analyzer = ReplayAnalyzer(raw_data)
-            res = analyzer.analyze()
-            pos_df = res["positions"]
-            boost_df = res["boost"]
+            self._assert_snapshot_matches(raw_data, b_snap)
 
-            self.assertEqual(list(pos_df.shape), b_snap["positions_shape"])
-            if b_snap["positions_hash"]:
-                self.assertEqual(compute_df_hash(pos_df), b_snap["positions_hash"])
-
-            self.assertEqual(list(boost_df.shape), b_snap["boost_shape"])
-            if b_snap["boost_hash"]:
-                self.assertEqual(compute_df_hash(boost_df), b_snap["boost_hash"])
-
-            self.assertEqual(len(res["goals"]), b_snap["goals_count"])
-            self.assertEqual(len(res["demolitions"]), b_snap["demolitions_count"])
+            # 09b: Paridade do binário rrrocket da plataforma a partir do .replay bruto
+            replay_file = ROOT_DIR / "tests" / "fixtures" / "replays" / f"{rep}.replay"
+            self.assertTrue(
+                replay_file.exists(),
+                f"Fixture de replay obrigatória ausente: {replay_file}",
+            )
+            parsed_data = parse_single_replay(str(replay_file))
+            self.assertIsNotNone(parsed_data, f"Falha ao parsear {replay_file} via rrrocket")
+            self._assert_snapshot_matches(parsed_data, b_snap)
 
 
 if __name__ == "__main__":

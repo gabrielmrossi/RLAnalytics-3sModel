@@ -13,27 +13,26 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from analyzer import ReplayAnalyzer
-from config import (
+from rl_analytics.analyzer import ReplayAnalyzer
+from rl_analytics.config import (
     DATASET_CSV_PATH,
     FIELD_HALF_LENGTH,
     FIELD_HALF_WIDTH,
     MODEL_PATH,
     PROCESSED_DIR,
 )
-from feature_catalog import (
-    NARRATIVE_TEMPLATES,
-    classify_tier,
-    compute_z_score,
+from rl_analytics.diagnosis import (
+    check_stagnation_anomaly as _domain_check_stagnation_anomaly,
+    generate_tactical_narrative as _domain_generate_tactical_narrative,
 )
-from knn_model import (
+from rl_analytics.knn_model import (
     ModelBenchmarking,
     ModelDrivenErrorDetector,
     RankClassifierRandomForest,
     TacticalClusterKMeans,
     get_X_y,
 )
-from parser import discover_replays
+from rl_analytics.parser import discover_replays
 
 
 @st.cache_data
@@ -142,72 +141,7 @@ def get_kmeans_clusters_data(_df_hash: str, X: np.ndarray, n_clusters: int):
 
 def check_stagnation_anomaly(positions: pd.DataFrame, team_num: int) -> list[str]:
     """Detecta anomalias de inatividade ou estagnação espacial prolongada por jogador."""
-    alerts: list[str] = []
-    if positions.empty:
-        return alerts
-
-    tdata = positions[(positions["team"] == team_num) & (positions["entity"] != "ball")]
-    if tdata.empty:
-        return alerts
-
-    x_range = [-FIELD_HALF_WIDTH - 300, FIELD_HALF_WIDTH + 300]
-    y_range = [-FIELD_HALF_LENGTH - 300, FIELD_HALF_LENGTH + 300]
-
-    for player_name, pgroup in tdata.groupby("entity"):
-        if len(pgroup) < 25:
-            continue
-
-        h, xedges, yedges = np.histogram2d(
-            pgroup["x"].values,
-            pgroup["y"].values,
-            bins=[16, 20],
-            range=[x_range, y_range],
-        )
-        max_in_cell = float(h.max())
-        pct_in_cell = (max_in_cell / len(pgroup)) * 100.0
-
-        if pct_in_cell >= 15.0:
-            ix, iy = np.unravel_index(np.argmax(h), h.shape)
-            cx = (xedges[ix] + xedges[ix + 1]) / 2
-            cy = (yedges[iy] + yedges[iy + 1]) / 2
-            alerts.append(
-                f"⚠️ <strong>Alerta de Estagnação:</strong> O jogador <strong>{player_name}</strong> "
-                f"permaneceu concentrado na coordenada (X≈{cx:.0f}, Y≈{cy:.0f}) durante {pct_in_cell:.0f}% "
-                f"do seu tempo em campo (~{int(max_in_cell)}s), indicando ineficiência severa de rotação ou inatividade."
-            )
-
-        p_sorted = pgroup.sort_values("frame")
-        dx = p_sorted["x"].diff().abs()
-        dy = p_sorted["y"].diff().abs()
-        is_still = (dx < 30.0) & (dy < 30.0)
-        still_streak = 0
-        max_still_streak = 0
-        still_x, still_y = 0.0, 0.0
-
-        for still, (_, row) in zip(is_still, p_sorted.iterrows()):
-            if still:
-                still_streak += 1
-                if still_streak > max_still_streak:
-                    max_still_streak = still_streak
-                    still_x, still_y = row["x"], row["y"]
-            else:
-                still_streak = 0
-
-        if max_still_streak >= 15 and pct_in_cell < 15.0:
-            alerts.append(
-                f"⚠️ <strong>Alerta de Imobilidade:</strong> O jogador <strong>{player_name}</strong> "
-                f"permaneceu praticamente imóvel por ~{max_still_streak}s consecutivos em (X≈{still_x:.0f}, Y≈{still_y:.0f})."
-            )
-
-    return alerts
-
-
-_SCORE_OVERVIEWS = {
-    "excellent": "O time demonstra um <strong>jogo sólido</strong>, com fundamentos alinhados ao padrão de jogadores experientes.",
-    "good": "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos precisam de atenção para subir de nível.",
-    "average": "O time apresenta <strong>dificuldades em fundamentos importantes</strong> da rotação e posicionamento.",
-    "poor": "O time tem <strong>problemas sérios de rotação</strong> que impedem a evolução no competitivo.",
-}
+    return _domain_check_stagnation_anomaly(positions, team_num, strip_html=False)
 
 
 def generate_tactical_narrative(
@@ -215,80 +149,4 @@ def generate_tactical_narrative(
     detector,
 ) -> tuple[str, float]:
     """Gera diagnóstico em linguagem natural e nota tática (0-100)."""
-    if not detector.is_built:
-        return "Modelo de IA ainda não disponível para diagnóstico.", 0.0
-
-    good_sentences: list[tuple[float, str]] = []
-    neutral_sentences: list[tuple[float, str]] = []
-    bad_sentences: list[tuple[float, str]] = []
-    score_parts: list[tuple[float, float]] = []
-
-    for feat_name in detector.feature_names:
-        val = team_feats.get(feat_name)
-        ref_mean = detector.reference_mean.get(feat_name)
-        if val is None or ref_mean is None:
-            continue
-
-        ref_std = max(detector.reference_std.get(feat_name, 1.0), 0.01)
-        importance = detector.feature_importances.get(feat_name, 0.0)
-        z = compute_z_score(val, ref_mean, ref_std)
-
-        tmpl = NARRATIVE_TEMPLATES.get(feat_name)
-        if not tmpl:
-            continue
-
-        direction = tmpl["direction"]
-        tier = classify_tier(z, direction)
-
-        if tier == "bad" and direction == "any":
-            text = tmpl.get("bad_above" if z > 0 else "bad_below", tmpl.get("bad", ""))
-        else:
-            text = tmpl.get(tier, "")
-
-        if not text:
-            continue
-
-        bucket = {"good": good_sentences, "neutral": neutral_sentences, "bad": bad_sentences}
-        bucket[tier].append((importance, text))
-
-        if direction == "below":
-            feat_score = 75 + z * 10
-        elif direction == "above":
-            feat_score = 75 - z * 10
-        else:
-            feat_score = 85 - abs(z) * 12
-        score_parts.append((max(0, min(100, feat_score)), importance))
-
-    if score_parts:
-        total_w = sum(w for _, w in score_parts)
-        score = sum(s * w for s, w in score_parts) / total_w if total_w > 0 else 50
-    else:
-        score = 50.0
-    score = max(0, min(100, round(score)))
-
-    for group in (good_sentences, neutral_sentences, bad_sentences):
-        group.sort(key=lambda x: x[0], reverse=True)
-
-    parts: list[str] = []
-
-    if score >= 80:
-        parts.append(_SCORE_OVERVIEWS["excellent"])
-    elif score >= 60:
-        parts.append(_SCORE_OVERVIEWS["good"])
-    elif score >= 40:
-        parts.append(_SCORE_OVERVIEWS["average"])
-    else:
-        parts.append(_SCORE_OVERVIEWS["poor"])
-
-    for _, text in good_sentences[:2]:
-        parts.append(text)
-
-    if bad_sentences:
-        parts.append("No entanto, foram observados pontos críticos:")
-        for _, text in bad_sentences:
-            parts.append(f"• {text}")
-    elif neutral_sentences:
-        for _, text in neutral_sentences[:1]:
-            parts.append(text)
-
-    return " ".join(parts), float(score)
+    return _domain_generate_tactical_narrative(team_feats, detector, strip_html=False)

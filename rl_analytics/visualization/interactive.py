@@ -9,7 +9,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
+from rl_analytics.config import CLUSTER_PALETTE, DARK_BG, DARK_PAPER
 
 
 def apply_dark_layout(

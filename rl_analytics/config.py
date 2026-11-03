@@ -4,22 +4,39 @@ Permite execução a partir de qualquer diretório de trabalho (CWD).
 """
 
 import os
+import sys
+import tempfile
 from pathlib import Path
 
 # Diretórios base
 SRC_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SRC_DIR.parent
 
-DATA_DIR = PROJECT_ROOT / "data"
-RAW_DIR = DATA_DIR / "raw"
-PROCESSED_DIR = DATA_DIR / "processed"
-DATASET_CSV_PATH = PROCESSED_DIR / "features_dataset.csv"
-MODEL_PATH = PROCESSED_DIR / "model_detector.joblib"
+DATA_DIR = Path(os.getenv("DATA_DIR", str(PROJECT_ROOT / "data")))
+RAW_DIR = Path(os.getenv("RAW_DIR", str(DATA_DIR / "raw")))
+PROCESSED_DIR = Path(os.getenv("PROCESSED_DIR", str(DATA_DIR / "processed")))
+PARQUET_DIR = Path(os.getenv("PARQUET_DIR", str(DATA_DIR / "parquet")))
 
-ARTIFACTS_DIR = PROJECT_ROOT / "artifacts"
+_default_csv = PROCESSED_DIR / "features_dataset.csv"
+DATASET_CSV_PATH = Path(
+    os.getenv("REFERENCE_CSV_PATH", os.getenv("DATASET_CSV_PATH", str(_default_csv)))
+)
+REFERENCE_CSV_PATH = DATASET_CSV_PATH
+
+ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", str(PROJECT_ROOT / "artifacts")))
 FIGURES_DIR = ARTIFACTS_DIR / "figures"
-BIN_DIR = PROJECT_ROOT / "bin"
-RRROCKET_PATH = BIN_DIR / "rrrocket.exe"
+MODELS_DIR = ARTIFACTS_DIR / "models"
+MODEL_PATH = Path(
+    os.getenv("MODEL_PATH", str(MODELS_DIR / "model_detector.v2.joblib"))
+)
+
+BIN_DIR = Path(os.getenv("BIN_DIR", str(PROJECT_ROOT / "bin")))
+_default_rrrocket = (
+    BIN_DIR / "rrrocket.exe" if sys.platform.startswith("win") else BIN_DIR / "linux" / "rrrocket"
+)
+RRROCKET_PATH = Path(os.getenv("RRROCKET_PATH", str(_default_rrrocket)))
+
+TMP_DIR = Path(os.getenv("TMP_DIR", tempfile.gettempdir()))
 
 # Constantes do campo oficial de Rocket League (Unreal Units: 10240 x 8192)
 FIELD_HALF_LENGTH = 5120  # y: -5120 a +5120

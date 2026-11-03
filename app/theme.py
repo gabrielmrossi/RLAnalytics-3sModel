@@ -2,17 +2,9 @@
 theme.py — Estilos, paletas visuais e injeção de CSS customizado no Streamlit.
 """
 
-import sys
-from pathlib import Path
-
-# Permite imports de src se app for executado diretamente
-SRC_DIR = Path(__file__).resolve().parent.parent / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
-
 import streamlit as st
 
-from config import (
+from rl_analytics.config import (
     BALL_COLOR,
     CLUSTER_PALETTE,
     DARK_BG,

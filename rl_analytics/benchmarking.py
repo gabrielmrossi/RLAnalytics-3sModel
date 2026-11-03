@@ -2,11 +2,12 @@
 benchmarking.py — Avaliação comparativa de modelos supervisionados via StratifiedKFold.
 """
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.model_selection import StratifiedKFold
@@ -14,9 +15,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
-from config import DARK_BG, DARK_PAPER
-from visualization.interactive import build_confusion_matrices_chart
-from visualization.static import plot_confusion_matrices_static, save_figure
+from rl_analytics.config import DARK_BG, DARK_PAPER
+
+if TYPE_CHECKING:
+    import plotly.graph_objects as go
 
 
 class ModelBenchmarking:
@@ -131,6 +133,9 @@ class ModelBenchmarking:
         save_path: str | None = None,
     ) -> go.Figure:
         """Gera 3 matrizes de confusao normalizadas lado a lado."""
+        from rl_analytics.visualization.interactive import build_confusion_matrices_chart
+        from rl_analytics.visualization.static import plot_confusion_matrices_static, save_figure
+
         if not self.confusion_matrices_:
             raise RuntimeError("Execute evaluate() antes de plotar.")
 

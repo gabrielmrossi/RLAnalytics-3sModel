@@ -155,6 +155,11 @@ class _SklearnRankClassifierBase:
         X_scaled = self.scaler.transform(X)
         return self.model.predict(X_scaled)
 
+    def predict_proba(self, X: np.ndarray) -> np.ndarray:
+        """Retorna matriz de probabilidades por classe para novas amostras."""
+        X_scaled = self.scaler.transform(X)
+        return self.model.predict_proba(X_scaled)
+
     def get_feature_importances(self) -> dict[str, float]:
         """Retorna importância MDI / Gini de cada feature."""
         if not self.is_trained:
@@ -244,7 +249,7 @@ class RankClassifierRandomForest(_SklearnRankClassifierBase):
         title: str = "Importancia das Features (Random Forest)",
     ) -> Any:
         """Gera gráfico de barras horizontal com Seaborn/Matplotlib."""
-        from visualization.static import plot_feature_importances_static, save_figure
+        from rl_analytics.visualization.static import plot_feature_importances_static, save_figure
 
         imp_dict = self.get_feature_importances()
         fig = plot_feature_importances_static(imp_dict, title=title)

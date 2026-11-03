@@ -14,8 +14,9 @@ build/
 dist/
 *.egg
 
-# Dados brutos e telemetria pesada (replays e dumps JSON)
+# Dados brutos e telemetria pesada (replays, dumps JSON e parquets gerados)
 data/raw/
+data/parquet/
 data/processed/*.json
 data/processed/*.replay
 data/**/*.json

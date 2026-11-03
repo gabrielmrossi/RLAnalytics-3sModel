@@ -9,23 +9,23 @@ import os
 import sys
 from pathlib import Path
 
-# Adiciona src ao path para permitir imports diretos
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import numpy as np
 import pandas as pd
 
-from config import CLUSTER_PALETTE, DATASET_CSV_PATH, FIGURES_DIR, PROCESSED_DIR
-from feature_catalog import get_feature_label
-from knn_model import (
+from rl_analytics.config import CLUSTER_PALETTE, DATASET_CSV_PATH, FIGURES_DIR, PROCESSED_DIR
+from rl_analytics.feature_catalog import get_feature_label
+from rl_analytics.knn_model import (
     ModelBenchmarking,
     RankClassifierRandomForest,
     TacticalClusterKMeans,
     get_X_y,
     load_dataset,
 )
-from visualization.static import (
+from rl_analytics.visualization.static import (
     plot_confusion_matrices_static,
     plot_elbow_static,
     plot_feature_importances_static,
