@@ -1,0 +1,17 @@
+# Binários e artefatos serializados (nunca converter CRLF)
+bin/** binary
+*.exe binary
+*.replay binary
+*.joblib binary
+*.pkl binary
+*.parquet binary
+*.gz binary
+*.png binary
+
+# Arquivos de verificação de checksum e scripts Linux exigem LF
+**/SHA256SUMS text eol=lf
+**/VERSION text eol=lf
+*.sh text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+
