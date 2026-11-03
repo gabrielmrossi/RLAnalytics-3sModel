@@ -56,22 +56,8 @@ COPY data/processed/features_dataset.csv ./data/processed/features_dataset.csv
 COPY tests/ ./tests/
 
 # 3. Smoke test no build: valida unpickle v2, predição e ausência do Streamlit (G4)
-RUN python -c "\
-import numpy as np; \
-from rl_analytics.error_detection import ModelDrivenErrorDetector; \
-det = ModelDrivenErrorDetector.load(); \
-assert det.is_built and len(det.feature_names) == 10; \
-x = np.zeros((1, len(det.feature_names)), dtype=float); \
-pred = det.predict(x); \
-proba = det.predict_proba(x); \
-assert len(pred) == 1 and len(proba) == 1; \
-print('[smoke] Modelo v2 OK:', pred[0], proba[0])" && \
-    python -c "\
-try:\
-    import streamlit;\
-    raise SystemExit('ERRO: streamlit nao deveria estar instalado na imagem!')\
-except ModuleNotFoundError:\
-    print('[smoke] Desacoplamento Streamlit (G4) OK')"
+RUN python -c "import numpy as np; from rl_analytics.error_detection import ModelDrivenErrorDetector; det = ModelDrivenErrorDetector.load(); assert det.is_built and len(det.feature_names) == 10; x = np.zeros((1, len(det.feature_names)), dtype=float); pred = det.predict(x); proba = det.predict_proba(x); assert len(pred) == 1 and len(proba) == 1; print('[smoke] Modelo v2 OK:', pred[0], proba[0])" && \
+    python -c "import importlib.util; assert importlib.util.find_spec('streamlit') is None, 'ERRO: streamlit nao deveria estar instalado na imagem!'; print('[smoke] Desacoplamento Streamlit (G4) OK')"
 
 # 4. Usuário não-root e diretórios de dados
 RUN groupadd -g 10001 appgroup && \

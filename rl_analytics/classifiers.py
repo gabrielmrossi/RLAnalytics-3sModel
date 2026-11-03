@@ -78,7 +78,7 @@ class RankClassifierKNN:
     def __init__(self, n_neighbors: int = 3):
         self.n_neighbors = n_neighbors
         self.scaler = StandardScaler()
-        self.knn = KNeighborsClassifier(n_neighbors=n_neighbors)
+        self.knn = KNeighborsClassifier(n_neighbors=n_neighbors, algorithm="brute")
         self.is_trained = False
 
     def train(self, X: np.ndarray, y: np.ndarray) -> None:
@@ -95,7 +95,9 @@ class RankClassifierKNN:
     def evaluate_loo(self, X: np.ndarray, y: np.ndarray) -> dict[str, Any]:
         """Leave-One-Out cross-validation."""
         return loo_evaluate(
-            lambda n_train: KNeighborsClassifier(n_neighbors=min(self.n_neighbors, n_train)),
+            lambda n_train: KNeighborsClassifier(
+                n_neighbors=min(self.n_neighbors, n_train), algorithm="brute"
+            ),
             X,
             y,
         )
