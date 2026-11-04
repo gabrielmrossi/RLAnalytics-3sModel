@@ -11,13 +11,14 @@ Modos:
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import sklearn
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from rl_analytics import __version__ as PIPELINE_VERSION
@@ -49,11 +50,13 @@ def seed_catalog_from_csv(
     reference_df: pd.DataFrame,
     *,
     seed_fixture_replays: bool = True,
+    force: bool = False,
 ) -> int:
-    """Popula a tabela `analytics.replay_analysis` a partir de `features_dataset.csv` se estiver vazia."""
-    existing_count = session.scalar(select(func.count()).select_from(ReplayAnalysisRecord)) or 0
-    if existing_count > 0:
-        return 0
+    """Popula a tabela `analytics.replay_analysis` a partir de `features_dataset.csv` se estiver vazia (ou se force=True)."""
+    if not force:
+        existing_count = session.scalar(select(func.count()).select_from(ReplayAnalysisRecord)) or 0
+        if existing_count > 0:
+            return 0
 
     if reference_df is None or reference_df.empty:
         return 0
@@ -124,6 +127,7 @@ def seed_catalog_from_csv(
                 "tier": diag["tier"],
                 "prediction": {"label": pred_label, "proba": proba_dict},
                 "summary": diag["summary"],
+                "positioning_synthesis": diag.get("positioning_synthesis"),
                 "findings": diag["findings"],
                 "alerts": [],
             })
@@ -180,16 +184,28 @@ def main() -> int:
     detector = ModelDrivenErrorDetector.load(str(MODEL_PATH))
     ref_df = pd.read_csv(DATASET_CSV_PATH) if Path(DATASET_CSV_PATH).exists() else None
 
-    discovered = discover_replays(str(RAW_DIR))
+    raw_dir = os.getenv("RAW_DIR", str(RAW_DIR))
+    discovered = discover_replays(raw_dir)
     session = database.SessionLocal()
     try:
         if not discovered:
             count = seed_catalog_from_csv(session, detector, ref_df) if ref_df is not None else 0
-            print(f"[seed] Nenhum .replay em {RAW_DIR}; {count} partidas populadas via CSV.")
+            print(f"[seed] Nenhum .replay em {raw_dir}; {count} partidas populadas via CSV.")
             return 0
+
+        # Remove registros sintéticos sem Parquet para evitar duplicatas
+        deleted_syn = session.execute(
+            delete(ReplayAnalysisRecord).where(
+                ReplayAnalysisRecord.has_spatial_telemetry == False  # noqa: E712
+            )
+        ).rowcount
+        session.commit()
+        print(f"[seed] Removidos {deleted_syn} registros sintéticos tabulares para substituição por 2D.")
 
         total_ok = 0
         for label, paths in discovered.items():
+            if label == "unlabeled":
+                continue
             for path in paths:
                 try:
                     rep = analyze_replay_file(
@@ -198,7 +214,7 @@ def main() -> int:
                         reference_df=ref_df,
                         persist_parquet=True,
                         parquet_dir=PARQUET_DIR,
-                        require_3v3=False,
+                        require_3v3=True,
                     )
                     upsert_replay_report(
                         session,
@@ -208,10 +224,10 @@ def main() -> int:
                         has_spatial_telemetry=True,
                     )
                     total_ok += 1
-                    print(f"[seed] OK [{label}] {Path(path).name} -> {rep['replay_id'][:12]}")
+                    print(f"[seed] OK ({total_ok}) [{label}] {Path(path).name} -> {rep['replay_id'][:12]}", flush=True)
                 except Exception as exc:
-                    print(f"[seed] ERRO em {path}: {exc}")
-        print(f"[seed] Concluído: {total_ok} replays processados para o catálogo.")
+                    print(f"[seed] IGNORADO/ERRO em {Path(path).name}: {exc}", flush=True)
+        print(f"[seed] Concluído: {total_ok} replays 3v3 com telemetria 2D processados no catálogo.", flush=True)
         return 0
     finally:
         session.close()

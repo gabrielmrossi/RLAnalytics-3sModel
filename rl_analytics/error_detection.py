@@ -92,7 +92,7 @@ class PositioningErrorDetector:
                     "description": (
                         f"Ball-chase ratio ({val:.1f}%) está {z_score:.1f} desvios acima "
                         f"da referência de rank alto ({ref_mean:.1f}%). "
-                        f"Jogadores ficam muito próximos da bola ao mesmo tempo."
+                        f"Dois ou mais jogadores próximos da bola simultaneamente no plano horizontal."
                     ),
                 })
 
@@ -112,7 +112,7 @@ class PositioningErrorDetector:
                     "description": (
                         f"Cobertura defensiva ({val:.1f}%) está {z_score:.1f} desvios abaixo "
                         f"da referência ({ref_mean:.1f}%). "
-                        f"Time fica sem defensores com frequência."
+                        f"Menor proporção de tempo com jogador posicionado no meio-campo defensivo."
                     ),
                 })
 
@@ -132,7 +132,7 @@ class PositioningErrorDetector:
                     "description": (
                         f"Área média do triângulo ({val:.0f}) está {z_score:.1f} desvios abaixo "
                         f"da referência ({ref_mean:.0f}). "
-                        f"Jogadores ficam muito agrupados, sem cobrir o campo."
+                        f"Área média de formação triangular inferior à referência de rank alto."
                     ),
                 })
 
@@ -152,7 +152,7 @@ class PositioningErrorDetector:
                     "description": (
                         f"Variação da dispersão ({val:.0f}) está {z_score:.1f} desvios acima "
                         f"da referência ({ref_mean:.0f}). "
-                        f"Rotação inconsistente: ora agrupados, ora dispersos."
+                        f"Variabilidade temporal do espaçamento entre companheiros superior à referência."
                     ),
                 })
 
@@ -172,7 +172,7 @@ class PositioningErrorDetector:
                     "description": (
                         f"Boost médio ({val:.1f}%) está {z_score:.1f} desvios abaixo "
                         f"da referência ({ref_mean:.1f}%). "
-                        f"Time fica frequentemente sem boost disponível."
+                        f"Nível médio instantâneo de boost nos tanques abaixo da referência."
                     ),
                 })
 

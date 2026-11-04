@@ -290,6 +290,7 @@ def analyze_replay_file(
                 "proba": proba_dict,
             },
             "summary": diag["summary"],
+            "positioning_synthesis": diag.get("positioning_synthesis"),
             "findings": diag["findings"],
             "alerts": [
                 {

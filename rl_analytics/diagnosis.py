@@ -1,6 +1,11 @@
 """
 diagnosis.py — Motor puro de diagnóstico tático, narrativa XAI (Z-Score × MDI) e anomalias espaciais.
 Livre de dependências de interface (Streamlit) e de marcação HTML nos payloads de domínio.
+Apresenta os resultados como ferramenta de apoio à análise do replay:
+- Observação (o que foi medido e comparado à referência GC+);
+- Possível interpretação (sem afirmação de causalidade ou erro);
+- O que observar no replay (sugestão prática de investigação contextual);
+- Síntese Geral do Posicionamento integrando geometria, pressão e ritmo coletivo.
 """
 
 from __future__ import annotations
@@ -17,6 +22,7 @@ from rl_analytics.feature_catalog import (
     NARRATIVE_TEMPLATES,
     classify_tier,
     compute_z_score,
+    get_feature_diagnostic_guidance,
     get_feature_label,
 )
 
@@ -27,20 +33,20 @@ _HTML_TAG_RE = re.compile(r"</?strong>")
 
 _SCORE_OVERVIEWS_HTML: dict[str, str] = {
     "excellent": (
-        "O time demonstra um <strong>jogo sólido</strong>, com fundamentos "
-        "alinhados ao padrão de jogadores experientes."
+        "A equipe apresenta <strong>alta aderência</strong> ao perfil estatístico de referência Grand Champion+, "
+        "com a maioria dos indicadores de dispersão, ritmo e geometria alinhada aos padrões das equipes de topo."
     ),
     "good": (
-        "O time tem <strong>fundamentos razoáveis</strong>, mas alguns pontos "
-        "precisam de atenção para subir de nível."
+        "A equipe apresenta <strong>aderência moderada</strong> ao perfil de referência Grand Champion+, "
+        "com proximidade estatística na maioria das características e variações pontuais que merecem revisão contextual no replay."
     ),
     "average": (
-        "O time apresenta <strong>dificuldades em fundamentos importantes</strong> "
-        "da rotação e posicionamento."
+        "A equipe apresenta <strong>aderência parcial</strong> ao perfil de referência Grand Champion+, "
+        "com desvios consideráveis em indicadores espaciais ou de ritmo em relação ao padrão das equipes de rank alto."
     ),
     "poor": (
-        "O time tem <strong>problemas sérios de rotação</strong> que impedem "
-        "a evolução no competitivo."
+        "A equipe apresenta <strong>baixa aderência</strong> ao perfil estatístico de referência Grand Champion+, "
+        "com divergência acentuada na maior parte das características coletivas analisadas."
     ),
 }
 
@@ -53,7 +59,7 @@ def _clean_html(text: str, strip_html: bool = True) -> str:
 
 
 def score_to_tier(score: float) -> str:
-    """Converte a nota tática (0–100) no tier qualitativo do time."""
+    """Converte o score numérico (0–100) no tier qualitativo de aderência ao perfil GC+."""
     if score >= 80:
         return "excellent"
     if score >= 60:
@@ -74,13 +80,153 @@ def compute_partial_feature_score(z: float, direction: str) -> float:
     return float(max(0.0, min(100.0, raw_score)))
 
 
+def generate_positioning_synthesis(
+    findings: list[dict[str, Any]],
+    team_tier: str,
+    score: float,
+) -> str:
+    """Gera a Síntese Geral do Posicionamento interpretando o conjunto de indicadores.
+
+    Reúne os principais resultados coletivos, correlaciona dimensões táticas fundamentais
+    (geometria espacial, abordagem da bola vs. retaguarda, dinâmica cinética e boost)
+    e propõe caminhos de investigação no replay sem afirmar intenção ou juízo determinista.
+    """
+    if not findings:
+        return "Dados de telemetria insuficientes para elaboração da síntese de posicionamento."
+
+    z_map = {f["feature"]: float(f["z"]) for f in findings}
+
+    # 1. Dimensão Espacial e Geometria da Formação
+    spread_z = z_map.get("team_spread_mean", 0.0)
+    area_z = z_map.get("triangle_area_mean", 0.0)
+    spread_std_z = z_map.get("team_spread_std", 0.0)
+    area_std_z = z_map.get("triangle_area_std", 0.0)
+
+    geo_parts: list[str] = []
+    if spread_z < -0.8 and area_z < -0.8:
+        geo_parts.append(
+            "Quanto à geometria coletiva, a equipe atuou em um bloco sensivelmente mais compacto que a média de referência GC+, "
+            "com menor distanciamento entre companheiros e área de formação reduzida."
+        )
+        if spread_std_z > 0.8 or area_std_z > 0.8:
+            geo_parts.append(
+                "Essa estrutura compacta alternou-se com variações bruscas de abertura ao longo da partida, indicando transições espaciais desiguais entre os momentos de contenção e avanço."
+            )
+        else:
+            geo_parts.append(
+                "Essa proximidade manteve-se uniforme durante o jogo. No replay, cabe averiguar se essa postura decorreu de uma escolha deliberada de cobertura curta e dobras defensivas na área, ou se acabou gerando aglomeração e perda de amplitude para saídas de bola."
+            )
+    elif spread_z < -0.5 or area_z < -0.5:
+        geo_parts.append(
+            "Quanto à geometria coletiva, a equipe operou com distâncias e área triangular moderadamente mais contidas que a média GC+, tendendo a um agrupamento mais próximo na maior parte das fases."
+        )
+        if spread_std_z > 0.8:
+            geo_parts.append(
+                "A variação acentuada no espaçamento sugere que as recomposições ocorreram de forma oscilante durante a partida."
+            )
+        else:
+            geo_parts.append(
+                "O espaçamento reduzido favoreceu o suporte imediato entre companheiros, embora exija atenção no replay para avaliar se houve espaço para inversões de jogada."
+            )
+    elif spread_z > 0.5 or area_z > 0.5:
+        geo_parts.append(
+            "No aspecto espacial, a equipe apresentou formação ampla e espaçamento expandido pelo campo, cobrindo faixas extensas da arena."
+        )
+        if spread_std_z > 0.8 or area_std_z > 0.8:
+            geo_parts.append(
+                "Entretanto, a elevada oscilação nessas distâncias indica recomposições assimétricas, com momentos de dispersão exagerada que podem afastar o terceiro homem da disputa."
+            )
+        else:
+            geo_parts.append(
+                "A estabilidade nessa dispersão favoreceu a distribuição equilibrada em campo, oferecendo opções abertas de passe e cobertura preventiva de rebotes."
+            )
+    else:
+        geo_parts.append(
+            "A distribuição espacial e a área de formação triangular da equipe mantiveram-se equilibradas e consistentes com o perfil de referência GC+, sem agrupamentos setoriais desnecessários nem dispersões excessivas."
+        )
+
+    # 2. Dimensão de Pressão na Bola e Equilíbrio da Retaguarda
+    chase_z = z_map.get("ball_chase_ratio", 0.0)
+    cov_z = z_map.get("defensive_coverage_pct", 0.0)
+    ball_dist_z = z_map.get("avg_dist_to_ball", 0.0)
+    min_dist_z = z_map.get("min_player_dist_to_ball", 0.0)
+
+    pres_parts: list[str] = []
+    if chase_z > 0.8 and cov_z < -0.6:
+        pres_parts.append(
+            "Na relação entre contestação de bola e proteção da retaguarda, observa-se uma dinâmica de maior exposição: registrou-se frequência elevada de múltiplos jogadores atuando simultaneamente nas imediações da bola combinada a um menor tempo de cobertura recuada no meio defensivo."
+        )
+        pres_parts.append(
+            "Esse comportamento aponta para avanços de bloco com forte ímpeto ofensivo, mas que deixam o campo vulnerável a lançamentos diretos e contra-ataques rápidos. No replay, recomenda-se verificar se essas aproximações conjuntas foram contestações coordenadas ou se resultaram em disputas concorrentes (double commits)."
+        )
+    elif chase_z > 0.8:
+        pres_parts.append(
+            "Na abordagem da bola, a equipe apresentou maior índice de aproximações simultâneas de dois ou mais jogadores na mesma zona da bola, embora a proteção recuada tenha permanecido intermediária."
+        )
+        pres_parts.append(
+            "Convém conferir no replay se as disputas divididas trouxeram controle imediato de posse ou se geraram sobreposições que atrasaram a transição para a defesa."
+        )
+    elif cov_z < -0.8:
+        pres_parts.append(
+            "Em relação à retaguarda territorial, a proporção de frames com jogador posicionado no próprio meio-campo foi inferior ao padrão GC+, sinalizando permanência prolongada dos três integrantes no campo de ataque."
+        )
+        pres_parts.append(
+            "Vale avaliar no replay se essa postura refletiu pressão ofensiva sustentada na área adversária ou se decorreu de lentidão no retorno após perdas de posse."
+        )
+    elif min_dist_z > 0.8 or ball_dist_z > 0.8:
+        pres_parts.append(
+            "A distância média da equipe e do primeiro homem em relação à bola esteve mais recuada que a referência, sugerindo marcação paciente (shadow defense) ou abordagem mais cautelosa ao portador adversário."
+        )
+    else:
+        pres_parts.append(
+            "A articulação entre disputa da bola e cobertura defensiva mostrou-se bem calibrada: a equipe alternou os desafios ao portador adversário sem comprometer a presença contínua de uma peça de segurança na retaguarda."
+        )
+
+    # 3. Dimensão Cinética e Gestão de Recursos (Boost)
+    speed_z = z_map.get("avg_speed", 0.0)
+    boost_z = z_map.get("avg_boost_pct", 0.0)
+
+    din_parts: list[str] = []
+    if speed_z < -0.8 and boost_z < -0.8:
+        din_parts.append(
+            "No ritmo de deslocamento e sustentação de velocidade, a equipe combinou velocidade média linear inferior e reservas instantâneas de boost reduzidas."
+        )
+        din_parts.append(
+            "Essa correlação sugere que os jogadores enfrentaram momentos de desabastecimento de combustível, o que impacta diretamente a velocidade das recomposições e a capacidade de reação rápida em bolas aéreas. Vale checar no replay se as rotas de recuo priorizaram a coleta de pads pequenos ou se exigiram desvios longos para boosts de 100."
+        )
+    elif speed_z < -0.8:
+        din_parts.append(
+            "A velocidade média dos veículos esteve abaixo da referência das equipes de rank alto, apesar de o nível de boost ter permanecido em patamar intermediário."
+        )
+        din_parts.append(
+            "Esse dado pode indicar uma cadência de jogo mais cautelosa e posicional, ou hesitação na leitura de jogadas antes da aceleração. A análise do vídeo permite diferenciar se foi uma escolha de controle ou lentidão de reação."
+        )
+    elif boost_z < -0.8:
+        din_parts.append(
+            "A equipe manteve velocidade dinâmica de movimentação, mas operou com reservas instantâneas de boost mais baixas que o habitual em GC+."
+        )
+        din_parts.append(
+            "Esse padrão indica alto gasto energético em transições contínuas, exigindo atenção especial no replay para verificar se houve vulnerabilidade em disputas no ar por falta de combustível residual."
+        )
+    else:
+        din_parts.append(
+            "A velocidade de jogo e a gestão de combustível apresentaram harmonia, sustentando deslocamentos velozes e recuperação eficiente de pads ao longo das fases da partida."
+        )
+
+    paragraph_1 = " ".join(geo_parts)
+    paragraph_2 = " ".join(pres_parts)
+    paragraph_3 = " ".join(din_parts)
+
+    return f"{paragraph_1}\n\n{paragraph_2}\n\n{paragraph_3}"
+
+
 def diagnose_team(
     team_feats: dict[str, float],
     detector: ModelDrivenErrorDetector,
     *,
     strip_html: bool = True,
 ) -> dict[str, Any]:
-    """Gera o diagnóstico estruturado completo (nota 0–100, tier, resumo e findings por feature).
+    """Gera o diagnóstico estruturado completo (nota 0–100, tier de aderência, resumo e findings por feature).
 
     Args:
         team_feats: Dicionário de features extraídas para o time.
@@ -88,7 +234,7 @@ def diagnose_team(
         strip_html: Se True (padrão da API), remove qualquer tag HTML dos textos.
 
     Returns:
-        Dict com 'score', 'tier', 'summary', 'narrative' e 'findings'.
+        Dict com 'score', 'tier', 'summary', 'narrative', 'positioning_synthesis' e 'findings'.
     """
     if not detector.is_built:
         msg = "Modelo de IA ainda não disponível para diagnóstico."
@@ -97,6 +243,7 @@ def diagnose_team(
             "tier": "poor",
             "summary": msg,
             "narrative": msg,
+            "positioning_synthesis": msg,
             "findings": [],
         }
 
@@ -123,22 +270,21 @@ def diagnose_team(
         direction = tmpl["direction"]
         tier = classify_tier(z, direction)
 
-        if tier == "bad" and direction == "any":
-            raw_text = tmpl.get("bad_above" if z > 0 else "bad_below", tmpl.get("bad", ""))
-        else:
-            raw_text = tmpl.get(tier, "")
+        guidance = get_feature_diagnostic_guidance(feat_name, z, tier)
+        observation = guidance["observation"]
+        interpretation = guidance["interpretation"]
+        replay_suggestion = guidance["replay_suggestion"]
 
-        if not raw_text:
-            continue
-
-        clean_text = _clean_html(raw_text, strip_html=strip_html)
+        # Texto explicativo simplificado, objetivo e direto (sem repetições desnecessárias)
+        clean_text = f"{observation} {interpretation}"
 
         bucket = {
             "good": good_sentences,
             "neutral": neutral_sentences,
             "bad": bad_sentences,
         }
-        bucket[tier].append((importance, clean_text))
+        # Adiciona resumo curto no bucket para construção do overview
+        bucket[tier].append((importance, f"{get_feature_label(feat_name)}: {observation}"))
 
         feat_score = compute_partial_feature_score(z, direction)
         score_parts.append((feat_score, importance))
@@ -165,7 +311,10 @@ def diagnose_team(
             "severity": severity,
             "partial_score": round(feat_score, 1),
             "weight": round(importance, 4),
-            "text": _clean_html(raw_text, strip_html=True),
+            "text": _clean_html(clean_text, strip_html=True),
+            "observation": observation,
+            "interpretation": interpretation,
+            "replay_suggestion": replay_suggestion,
         })
 
     if score_parts:
@@ -184,23 +333,28 @@ def diagnose_team(
     overview = _clean_html(_SCORE_OVERVIEWS_HTML[team_tier], strip_html=strip_html)
 
     parts: list[str] = [overview]
-    for _, text in good_sentences[:2]:
-        parts.append(text)
-
     if bad_sentences:
-        parts.append("No entanto, foram observados pontos críticos:")
+        parts.append("Indicadores com maior divergência para investigação no replay:")
         for _, text in bad_sentences:
             parts.append(f"• {text}")
     elif neutral_sentences:
-        for _, text in neutral_sentences[:1]:
-            parts.append(text)
+        parts.append("Indicadores com variações intermediárias a acompanhar:")
+        for _, text in neutral_sentences[:2]:
+            parts.append(f"• {text}")
+    elif good_sentences:
+        parts.append("Características com padrão mais próximo da referência GC+:")
+        for _, text in good_sentences[:2]:
+            parts.append(f"• {text}")
 
     narrative = " ".join(parts)
+    positioning_synthesis = generate_positioning_synthesis(findings, team_tier, score)
+
     return {
         "score": score,
         "tier": team_tier,
         "summary": _clean_html(narrative, strip_html=True),
         "narrative": narrative,
+        "positioning_synthesis": positioning_synthesis,
         "findings": findings,
     }
 
@@ -211,7 +365,7 @@ def generate_tactical_narrative(
     *,
     strip_html: bool = True,
 ) -> tuple[str, float]:
-    """Gera diagnóstico em linguagem natural e nota tática (0–100)."""
+    """Gera diagnóstico em linguagem natural e nota de aderência ao perfil GC+ (0–100)."""
     diag = diagnose_team(team_feats, detector, strip_html=strip_html)
     return diag["narrative"], float(diag["score"])
 
@@ -220,7 +374,11 @@ def detect_stagnation_anomalies(
     positions: pd.DataFrame,
     team_num: int,
 ) -> list[dict[str, Any]]:
-    """Detecta anomalias de inatividade ou estagnação espacial prolongada de forma estruturada."""
+    """Detecta concentrações espaciais e períodos de baixa variação de posição de forma estruturada.
+
+    Limita-se a constatações geométricas objetivas e propõe verificação contextual no replay,
+    sem afirmar ineficiência ou erro tático a priori.
+    """
     anomalies: list[dict[str, Any]] = []
     if positions.empty:
         return anomalies
@@ -258,15 +416,16 @@ def detect_stagnation_anomalies(
                 "pct_time": round(pct_in_cell, 1),
                 "seconds": seconds,
                 "text": (
-                    f"Alerta de Estagnação: O jogador {player_name} permaneceu concentrado "
-                    f"na coordenada (X≈{cx:.0f}, Y≈{cy:.0f}) durante {pct_in_cell:.0f}% "
-                    f"do seu tempo em campo (~{seconds}s), indicando ineficiência severa "
-                    f"de rotação ou inatividade."
+                    f"Concentração Espacial: O jogador {player_name} esteve presente na região "
+                    f"(X≈{cx:.0f}, Y≈{cy:.0f}) em {pct_in_cell:.0f}% das amostras (~{seconds}s). "
+                    f"Sugere-se verificar no replay se a permanência prolongada nessa zona atendeu a uma cobertura defensiva posicional "
+                    f"ou se gerou isolamento das fases ofensivas da equipe."
                 ),
                 "html": (
-                    f"⚠️ <strong>Alerta de Estagnação:</strong> O jogador <strong>{player_name}</strong> "
-                    f"permaneceu concentrado na coordenada (X≈{cx:.0f}, Y≈{cy:.0f}) durante {pct_in_cell:.0f}% "
-                    f"do seu tempo em campo (~{seconds}s), indicando ineficiência severa de rotação ou inatividade."
+                    f"📍 <strong>Concentração Espacial:</strong> O jogador <strong>{player_name}</strong> "
+                    f"esteve presente na região (X≈{cx:.0f}, Y≈{cy:.0f}) em {pct_in_cell:.0f}% das amostras (~{seconds}s). "
+                    f"Sugere-se verificar no replay se a permanência prolongada nessa zona atendeu a uma cobertura defensiva posicional "
+                    f"ou se gerou isolamento das fases ofensivas da equipe."
                 ),
             })
 
@@ -296,12 +455,16 @@ def detect_stagnation_anomalies(
                 "pct_time": round((max_still_streak / len(pgroup)) * 100.0, 1),
                 "seconds": int(max_still_streak),
                 "text": (
-                    f"Alerta de Imobilidade: O jogador {player_name} permaneceu praticamente "
-                    f"imóvel por ~{max_still_streak}s consecutivos em (X≈{still_x:.0f}, Y≈{still_y:.0f})."
+                    f"Baixa Variação Posicional: O jogador {player_name} registrou deslocamento mínimo "
+                    f"por ~{max_still_streak}s contínuos em (X≈{still_x:.0f}, Y≈{still_y:.0f}). "
+                    f"Investigar no replay se o jogador estava contendo avanço adversário (shadow defense / guarda de trave) "
+                    f"ou se houve desconexão temporária da dinâmica da partida."
                 ),
                 "html": (
-                    f"⚠️ <strong>Alerta de Imobilidade:</strong> O jogador <strong>{player_name}</strong> "
-                    f"permaneceu praticamente imóvel por ~{max_still_streak}s consecutivos em (X≈{still_x:.0f}, Y≈{still_y:.0f})."
+                    f"⏱️ <strong>Baixa Variação Posicional:</strong> O jogador <strong>{player_name}</strong> "
+                    f"registrou deslocamento mínimo por ~{max_still_streak}s contínuos em (X≈{still_x:.0f}, Y≈{still_y:.0f}). "
+                    f"Investigar no replay se o jogador estava contendo avanço adversário (shadow defense / guarda de trave) "
+                    f"ou se houve desconexão temporária da dinâmica da partida."
                 ),
             })
 
@@ -314,7 +477,7 @@ def check_stagnation_anomaly(
     *,
     strip_html: bool = False,
 ) -> list[str]:
-    """Retorna lista de mensagens de alerta de estagnação/imobilidade."""
+    """Retorna lista de mensagens de concentração espacial e baixa variação posicional."""
     anomalies = detect_stagnation_anomalies(positions, team_num)
     key = "text" if strip_html else "html"
     return [a[key] for a in anomalies]

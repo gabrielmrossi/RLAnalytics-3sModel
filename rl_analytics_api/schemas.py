@@ -136,6 +136,9 @@ class FindingItem(BaseModel):
     partial_score: float
     weight: float
     text: str
+    observation: str | None = None
+    interpretation: str | None = None
+    replay_suggestion: str | None = None
 
 
 class StagnationAlertItem(BaseModel):
@@ -155,6 +158,7 @@ class TeamDiagnosis(BaseModel):
     tier: Literal["excellent", "good", "average", "poor"]
     prediction: PredictionInfo
     summary: str
+    positioning_synthesis: str | None = None
     findings: list[FindingItem]
     alerts: list[StagnationAlertItem] = Field(default_factory=list)
 
