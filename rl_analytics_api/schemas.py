@@ -266,3 +266,28 @@ class HealthResponse(BaseModel):
     redis: str
     details: dict[str, Any] = Field(default_factory=dict)
 
+
+
+class TimelineEntitySample(BaseModel):
+    entity: str
+    team: int
+    x: float
+    y: float
+    z: float = 0.0
+    vx: float = 0.0
+    vy: float = 0.0
+
+
+class TimelineFrameItem(BaseModel):
+    frame: int
+    time: float
+    entities: list[TimelineEntitySample]
+
+
+class ReplayTimelineResponse(BaseModel):
+    replay_id: str
+    has_spatial_telemetry: bool
+    start_time: float = 0.0
+    frames: list[TimelineFrameItem] = Field(default_factory=list)
+    goals: list[dict[str, Any]] = Field(default_factory=list)
+    demolitions: list[dict[str, Any]] = Field(default_factory=list)

@@ -667,3 +667,94 @@ async def get_replay_report(
         goals=rec.goals_json or [],
         demolitions=rec.demolitions_json or [],
     )
+
+
+# ── (e) Timeline 2D Frame a Frame (/timeline) ──────────────────────────────
+
+from rl_analytics_api.schemas import (  # noqa: E402
+    ReplayTimelineResponse,
+    TimelineEntitySample,
+    TimelineFrameItem,
+)
+
+
+@app.get(
+    f"{API_PREFIX}/replays/{{replay_id}}/timeline",
+    response_model=ReplayTimelineResponse,
+    tags=["analytics"],
+)
+async def get_replay_timeline(
+    replay_id: str,
+    request: Request,
+    response: Response,
+    db: Session = Depends(database.get_db),
+) -> ReplayTimelineResponse | Response:
+    rec = _get_replay_or_404(db, replay_id)
+    if _check_etag(request, response, rec.replay_id, f"{rec.model_version}:timeline"):
+        return Response(status_code=304, headers=dict(response.headers))
+
+    pq_file: Path | None = None
+    if rec.parquet_dir:
+        candidate = Path(rec.parquet_dir) / "positions.parquet"
+        if candidate.exists():
+            pq_file = candidate
+    if pq_file is None:
+        fallback_pq = Path(os.getenv("PARQUET_DIR", str(PARQUET_DIR))) / rec.replay_id / "positions.parquet"
+        if fallback_pq.exists():
+            pq_file = fallback_pq
+
+    if pq_file is None or not pq_file.exists():
+        return ReplayTimelineResponse(
+            replay_id=rec.replay_id,
+            has_spatial_telemetry=False,
+            start_time=0.0,
+            frames=[],
+            goals=rec.goals_json or [],
+            demolitions=rec.demolitions_json or [],
+        )
+
+    positions_df = pd.read_parquet(pq_file)
+    if positions_df.empty:
+        return ReplayTimelineResponse(
+            replay_id=rec.replay_id,
+            has_spatial_telemetry=False,
+            start_time=0.0,
+            frames=[],
+            goals=rec.goals_json or [],
+            demolitions=rec.demolitions_json or [],
+        )
+
+    positions_df = positions_df.sort_values(["frame", "team", "entity"])
+    frames_out: list[TimelineFrameItem] = []
+    for frame_val, grp in positions_df.groupby("frame", sort=True):
+        frame_time = float(grp.iloc[0]["time"])
+        entities: list[TimelineEntitySample] = []
+        for row in grp.itertuples(index=False):
+            entities.append(
+                TimelineEntitySample(
+                    entity=str(getattr(row, "entity", "")),
+                    team=int(getattr(row, "team", -1)),
+                    x=round(float(getattr(row, "x", 0.0)), 1),
+                    y=round(float(getattr(row, "y", 0.0)), 1),
+                    z=round(float(getattr(row, "z", 0.0)), 1),
+                    vx=round(float(getattr(row, "vx", 0.0)), 1),
+                    vy=round(float(getattr(row, "vy", 0.0)), 1),
+                )
+            )
+        frames_out.append(
+            TimelineFrameItem(
+                frame=int(frame_val),
+                time=round(frame_time, 3),
+                entities=entities,
+            )
+        )
+
+    start_time = frames_out[0].time if frames_out else 0.0
+    return ReplayTimelineResponse(
+        replay_id=rec.replay_id,
+        has_spatial_telemetry=True,
+        start_time=start_time,
+        frames=frames_out,
+        goals=rec.goals_json or [],
+        demolitions=rec.demolitions_json or [],
+    )
