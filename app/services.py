@@ -148,5 +148,5 @@ def generate_tactical_narrative(
     team_feats: dict[str, float],
     detector,
 ) -> tuple[str, float]:
-    """Gera diagnóstico em linguagem natural e nota tática (0-100)."""
+    """Gera diagnóstico em linguagem natural e índice de aderência (0-100)."""
     return _domain_generate_tactical_narrative(team_feats, detector, strip_html=False)

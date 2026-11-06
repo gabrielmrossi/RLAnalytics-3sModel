@@ -226,7 +226,7 @@ def diagnose_team(
     *,
     strip_html: bool = True,
 ) -> dict[str, Any]:
-    """Gera o diagnóstico estruturado completo (nota 0–100, tier de aderência, resumo e findings por feature).
+    """Gera o diagnóstico estruturado completo (índice de aderência 0–100, tier de aderência, resumo e findings por feature).
 
     Args:
         team_feats: Dicionário de features extraídas para o time.
@@ -365,7 +365,7 @@ def generate_tactical_narrative(
     *,
     strip_html: bool = True,
 ) -> tuple[str, float]:
-    """Gera diagnóstico em linguagem natural e nota de aderência ao perfil GC+ (0–100)."""
+    """Gera diagnóstico em linguagem natural e índice de aderência ao perfil GC+ (0–100)."""
     diag = diagnose_team(team_feats, detector, strip_html=strip_html)
     return diag["narrative"], float(diag["score"])
 
